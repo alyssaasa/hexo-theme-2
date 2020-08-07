@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/2.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/1.png">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '7.5.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":true,"scrollpercent":true},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":true,"trigger":"auto","top_n_per_article":10,"unescape":false,"preload":false},
+    path: './public/search.xml',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: '复制',
+      copy_success: '复制成功',
+      copy_failure: '复制失败'
+    },
+    sidebarPadding: 40
+  };
+</script>
+
+  <meta name="description" content="参考链接：https://segmentfault.com/a/1190000016686335参考链接：https://www.cnblogs.com/pinard/p/5993450.html 🎃. 什么是性能度量？我们都知道机器学习要建模，但是对于模型性能的好坏（即模型的泛化能力），我们并不知道是怎样的，很可能这个模型就是一个差的模型，泛化能力弱，对测试集不能很好的预测或分类。那么如何知道">
+<meta name="keywords" content="机器学习">
+<meta property="og:type" content="article">
+<meta property="og:title" content="准确率，精确率，召回率和AUC曲线，PR曲线">
+<meta property="og:url" content="http://yoursite.com/2019/08/17/µ╖╖µ╖åτƒ⌐Θÿ╡∩╝îσçåτí«τÄç∩╝îτ▓╛σçåτÄç∩╝îσÅ¼σ¢₧τÄç/index.html">
+<meta property="og:site_name" content="各有未来">
+<meta property="og:description" content="参考链接：https://segmentfault.com/a/1190000016686335参考链接：https://www.cnblogs.com/pinard/p/5993450.html 🎃. 什么是性能度量？我们都知道机器学习要建模，但是对于模型性能的好坏（即模型的泛化能力），我们并不知道是怎样的，很可能这个模型就是一个差的模型，泛化能力弱，对测试集不能很好的预测或分类。那么如何知道">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://yoursite.com/images/others/1.png">
+<meta property="og:updated_time" content="2019-10-30T12:32:06.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="准确率，精确率，召回率和AUC曲线，PR曲线">
+<meta name="twitter:description" content="参考链接：https://segmentfault.com/a/1190000016686335参考链接：https://www.cnblogs.com/pinard/p/5993450.html 🎃. 什么是性能度量？我们都知道机器学习要建模，但是对于模型性能的好坏（即模型的泛化能力），我们并不知道是怎样的，很可能这个模型就是一个差的模型，泛化能力弱，对测试集不能很好的预测或分类。那么如何知道">
+<meta name="twitter:image" content="http://yoursite.com/images/others/1.png">
+
+<link rel="canonical" href="http://yoursite.com/2019/08/17/µ╖╖µ╖åτƒ⌐Θÿ╡∩╝îσçåτí«τÄç∩╝îτ▓╛σçåτÄç∩╝îσÅ¼σ¢₧τÄç/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>准确率，精确率，召回率和AUC曲线，PR曲线 | 各有未来</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">各有未来</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="none"
+           placeholder="搜索..." spellcheck="false"
+           type="text" id="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/08/17/µ╖╖µ╖åτƒ⌐Θÿ╡∩╝îσçåτí«τÄç∩╝îτ▓╛σçåτÄç∩╝îσÅ¼σ¢₧τÄç/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/toux.jpg">
+      <meta itemprop="name" content="Alyssa">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="各有未来">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          准确率，精确率，召回率和AUC曲线，PR曲线
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-08-17 14:11:16" itemprop="dateCreated datePublished" datetime="2019-08-17T14:11:16+08:00">2019-08-17</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2019-10-30 20:32:06" itemprop="dateModified" datetime="2019-10-30T20:32:06+08:00">2019-10-30</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/机器学习/" itemprop="url" rel="index">
+                    <span itemprop="name">机器学习</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>参考链接：<a href="https://segmentfault.com/a/1190000016686335" target="_blank" rel="noopener">https://segmentfault.com/a/1190000016686335</a><br>参考链接：<a href="https://www.cnblogs.com/pinard/p/5993450.html" target="_blank" rel="noopener">https://www.cnblogs.com/pinard/p/5993450.html</a></p>
+<h5 id="🎃-什么是性能度量？"><a href="#🎃-什么是性能度量？" class="headerlink" title="🎃. 什么是性能度量？"></a>🎃. 什么是性能度量？</h5><p>我们都知道机器学习要建模，但是对于模型性能的好坏（即模型的泛化能力），我们并不知道是怎样的，很可能这个模型就是一个差的模型，泛化能力弱，对测试集不能很好的预测或分类。那么如何知道这个模型是好是坏呢？我们必须有个评判的标准。<strong>为了了解模型的泛化能力，我们需要用某个指标来衡量，这就是性能度量的意义。</strong>有了一个指标，我们就可以对比不同模型了，从而知道哪个模型相对好，那个模型相对差，并通过这个指标来进一步调参逐步优化我们的模型。</p>
+<a id="more"></a>
+<h5 id="🎃-混淆矩阵-（TP-TN-FP-FN）"><a href="#🎃-混淆矩阵-（TP-TN-FP-FN）" class="headerlink" title="🎃. 混淆矩阵 （TP TN FP FN）"></a>🎃. 混淆矩阵 （TP TN FP FN）</h5><ol>
+<li>True Positives,TP：预测为正样本，实际也为正样本的特征数</li>
+<li>False Positives,FP：预测为正样本，实际为负样本的特征数</li>
+<li>True Negatives,TN：预测为负样本，实际也为负样本的特征数</li>
+<li>False Negatives,FN：预测为负样本，实际为正样本的特征数</li>
+</ol>
+<p><strong>True / False：是针对原样本而言的。</strong><br><strong>Positive / Negative：是针对预测结果而言的。</strong></p>
+<h5 id="🎃-准确率-accuracy"><a href="#🎃-准确率-accuracy" class="headerlink" title="🎃. 准确率 (accuracy)"></a>🎃. 准确率 (accuracy)</h5><p>既然是个分类指标，我们可以很自然的想到准确率，准确率的定义是预测正确的结果占总样本的百分比，其公式如下：</p>
+<script type="math/tex; mode=display">accuracy = \frac{TP+TN}{TP+TN+FP+FN}</script><p>虽然准确率可以判断总的正确率，但是在<strong>样本不平衡</strong>的情况下，并不能作为很好的指标来衡量结果。举个简单的例子，比如在一个总样本中，正样本占90%，负样本占10%，样本是严重不平衡的。对于这种情况，我们只需要将全部样本预测为正样本即可得到90%的高准确率，但实际上我们并没有很用心的分类，只是随便无脑一分而已。这就说明了：由于样本不平衡的问题，导致了得到的高准确率结果含有很大的水分。即如果样本不平衡，准确率就会失效。</p>
+<p>正因为如此，也就衍生出了其它两种指标：精准率和召回率。</p>
+<h5 id="🎃-精确率-precision"><a href="#🎃-精确率-precision" class="headerlink" title="🎃. 精确率 (precision)"></a>🎃. 精确率 (precision)</h5><script type="math/tex; mode=display">precision = \frac{TP}{TP+FP}</script><p>精确率：预测为正的样本中有多少是真的正样本。精确率和准确率看上去有些类似，但是完全不同的两个概念。精准率代表对正样本结果中的预测准确程度，而准确率则代表整体的预测准确程度，既包括正样本，也包括负样本。</p>
+<h5 id="🎃-召回率-recall"><a href="#🎃-召回率-recall" class="headerlink" title="🎃. 召回率 (recall)"></a>🎃. 召回率 (recall)</h5><script type="math/tex; mode=display">recall = \frac{TP}{TP+FN}</script><p>召回率，又叫查全率，它是针对原样本而言的，它的含义是样本中为正的，有多少被预测为正。</p>
+<p><strong>召回率的应用场景：</strong>比如拿网贷违约率为例，相对好用户，我们更关心坏用户，不能错放过任何一个坏用户。因为如果我们过多的将坏用户当成好用户，这样后续可能发生的违约金额会远超过好用户偿还的借贷利息金额，造成严重偿失。<strong>召回率越高，代表实际坏用户被预测出来的概率越高，它的含义类似：宁可错杀一千，绝不放过一个。</strong></p>
+<h5 id="🎃-特异度-specificity"><a href="#🎃-特异度-specificity" class="headerlink" title="🎃. 特异度 (specificity)"></a>🎃. 特异度 (specificity)</h5><script type="math/tex; mode=display">specificity = \frac{TN}{TN+FP}</script><p>特异度被定义为：样本中为负的，有多少被预测为负。和召回率刚好相反，一个针对正样本而言，一个针对负样本而言。</p>
+<h5 id="🎃-F-1-值"><a href="#🎃-F-1-值" class="headerlink" title="🎃. $F_1$值"></a>🎃. $F_1$值</h5><script type="math/tex; mode=display">F_1 = \frac{P * R * 2}{P + R}</script><p>F1值 = 精确率 <em> 召回率 </em> 2 / (精确率 + 召回率) （F1值即为精确率和召回率的调和平均值）</p>
+<p>不妨举<a href="https://link.zhihu.com/?target=http%3A//peghoty.blog.163.com/blog/static/49346409201302595935709/" target="_blank" rel="noopener">这样一个例子</a>：某池塘有1400条鲤鱼，300只虾，300只鳖。现在以捕鲤鱼为目的。撒一大网，逮着了700条鲤鱼，200只虾，100只鳖。那么，这些指标分别如下：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">P (precision) = 700 / (700 + 200 + 100) = 70%</span><br><span class="line">R (recall) = 700 / 1400 = 50%</span><br><span class="line">F1 = 70% * 50% * 2 / (70% + 50%) = 58.3%</span><br></pre></td></tr></table></figure>
+<p>不妨看看如果把池子里的所有的鲤鱼、虾和鳖都一网打尽，这些指标又有何变化：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">P (precision) = 1400 / (1400 + 300 + 300) = 70%</span><br><span class="line">R (recall) = 1400 / 1400 = 100%</span><br><span class="line">F1 = 70% * 100% * 2 / (70% + 100%) = 82.35%</span><br></pre></td></tr></table></figure>
+<p>由此可见，精确率是评估捕获的成果中目标成果所占得比例；召回率，顾名思义，就是从关注领域中，召回目标类别的比例；而F值，则是综合这二者指标的评估指标，用于综合反映整体的指标。</p>
+<p>当然希望检索结果precision越高越好，同时recall也越高越好，但事实上这两者在某些情况下有矛盾的。比如极端情况下，我们只搜索出了一个结果，且是准确的，那么precision就是100%，但是recall就很低；而如果我们把所有结果都返回，那么recall是100%，但是precision就会很低。因此在不同的场合中需要自己判断希望precision比较高或是recall比较高。如果是做实验研究，可以绘制<strong>Precision-Recall曲线</strong>来帮助分析。</p>
+<p>有时候我们对精确率和召回率并不是一视同仁，比如有时候我们更加重视精确率。我们用一个参数 $\beta$ 来度量两者之间的关系。如果 $\beta&gt;1$, 召回率有更大影响，如果 $\beta&lt;1$, 精确率有更大影响。自然，当 $\beta=1$ 的时候，精确率和召回率影响力相同，和F1形式一样。含有度量参数 $\beta$ 的F1我们记为 $F_\beta$, 严格的数学定义如下：</p>
+<script type="math/tex; mode=display">𝐹_𝛽=\frac{(1+𝛽^2)∗𝑃∗𝑅}{𝛽^2∗𝑃+𝑅}</script><h5 id="🎃-RoC-曲线与AUC值"><a href="#🎃-RoC-曲线与AUC值" class="headerlink" title="🎃. RoC 曲线与AUC值"></a>🎃. RoC 曲线与AUC值</h5><p>🎋. 灵敏度 TPR (true positive rate) (同召回率)：真实样本中为正的，有多少被预测为正</p>
+<p>🎋. 1-特异度：FPR (false positive rate)：真实样本为负的，有多少被预测为正</p>
+<script type="math/tex; mode=display">FPR = \frac{FP}{FP+TN}</script><p>🎋. ROC曲线与AUC值：以TPR为y轴，以FPR为x轴，我们就直接得到了RoC曲线。从FPR和TPR的定义可以理解，TPR越高，FPR越小，我们的模型和算法就越高效。也就是画出来的RoC曲线越靠近左上越好。如下图左图所示。从几何的角度讲，RoC曲线下方的面积越大越大，则模型越优。所以有时候我们用<strong>RoC曲线下的面积</strong>，即AUC（Area Under Curve）值来作为算法和模型好坏的标准。</p>
+<p><img src="/images/others/1.png" alt="img"></p>
+<p>🎋. PR曲线：以精确率为y轴，以召回率为x轴，我们就得到了PR曲线。仍然从精确率和召回率的定义可以理解，精确率越高，召回率越高，我们的模型和算法就越高效。也就是画出来的PR曲线越靠近右上越好。如上图右图所示。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          
+          <div class="post-tags">
+              <a href="/tags/机器学习/" rel="tag"><i class="fa fa-tag"></i> 机器学习</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+                <a href="/2019/08/17/Σ║îσÅëµáæ/" rel="next" title="二叉树">
+                  <i class="fa fa-chevron-left"></i> 二叉树
+                </a>
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+                <a href="/2019/08/17/µÄÆσ║Åτ«ùµ│ò/" rel="prev" title="排序算法">
+                  排序算法 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-5"><a class="nav-link" href="#🎃-什么是性能度量？"><span class="nav-number">1.</span> <span class="nav-text">🎃. 什么是性能度量？</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#🎃-混淆矩阵-（TP-TN-FP-FN）"><span class="nav-number">2.</span> <span class="nav-text">🎃. 混淆矩阵 （TP TN FP FN）</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#🎃-准确率-accuracy"><span class="nav-number">3.</span> <span class="nav-text">🎃. 准确率 (accuracy)</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#🎃-精确率-precision"><span class="nav-number">4.</span> <span class="nav-text">🎃. 精确率 (precision)</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#🎃-召回率-recall"><span class="nav-number">5.</span> <span class="nav-text">🎃. 召回率 (recall)</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#🎃-特异度-specificity"><span class="nav-number">6.</span> <span class="nav-text">🎃. 特异度 (specificity)</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#🎃-F-1-值"><span class="nav-number">7.</span> <span class="nav-text">🎃. $F_1$值</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#🎃-RoC-曲线与AUC值"><span class="nav-number">8.</span> <span class="nav-text">🎃. RoC 曲线与AUC值</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Alyssa"
+      src="/images/toux.jpg">
+  <p class="site-author-name" itemprop="name">Alyssa</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">27</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/alyssaasa" title="GitHub → https://github.com/alyssaasa" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://weibo.com/Alyssaasa" title="Weibo → https://weibo.com/Alyssaasa" rel="noopener" target="_blank"><i class="fa fa-fw fa-weibo"></i>Weibo</a>
+      </span>
+  </div>
+
+
+<script type="text/javascript">
+     var alltags = document.getElementsByClassName('tag-cloud-tags');
+     var tags = alltags[0].getElementsByTagName('a');
+     for (var i = tags.length - 1; i >= 0; i--) {
+       var r=Math.floor(Math.random()*75+130);
+       var g=Math.floor(Math.random()*75+100);
+       var b=Math.floor(Math.random()*75+80);
+       tags[i].style.background = "rgb("+r+","+g+","+b+")";
+     }
+</script>
+
+<style>
+  .tag-cloud-tags{
+    /*font-family: Helvetica, Tahoma, Arial;*/
+    /*font-weight: 100;*/
+    text-align: center;
+    counter-reset: tags;
+  }
+  .tag-cloud-tags a{
+    border-radius: 6px;
+    padding-right: 5px;
+    padding-left: 5px;
+    margin: 8px 5px 10px 3px;
+  }
+  .tag-cloud-tags a:before{
+    content: "🔖";
+  }
+
+  .tag-cloud-tags a:hover{
+     box-shadow: 0px 5px 15px 0px rgba(0,0,0,.4);
+     transform: scale(1.1);
+     /*box-shadow: 10px 10px 15px 2px rgba(0,0,0,.12), 0 0 6px 0 rgba(104, 104, 105, 0.1);*/
+     transition-duration: 0.15s;
+  }
+
+</style>
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2019 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Alyssa</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/pisces.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+  <script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+<script type="text/x-mathjax-config">
+
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ['\\(', '\\)'] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+      equationNumbers: {
+        autoNumber: 'AMS'
+      }
+    }
+  });
+
+  MathJax.Hub.Register.StartupHook('TeX Jax Ready', function() {
+    MathJax.InputJax.TeX.prefilterHooks.Add(function(data) {
+      if (data.display) {
+        var next = data.script.nextSibling;
+        while (next && next.nodeName.toLowerCase() === '#text') {
+          next = next.nextSibling;
+        }
+        if (next && next.nodeName.toLowerCase() === 'br') {
+          next.parentNode.removeChild(next);
+        }
+      }
+    });
+  });
+
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for (i = 0; i < all.length; i += 1) {
+      element = document.getElementById(all[i].inputID + '-Frame').parentNode;
+      if (element.nodeName.toLowerCase() == 'li') {
+        element = element.parentNode;
+      }
+      element.classList.add('has-jax');
+    }
+  });
+</script>
+<script>
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_HTMLorMML', () => {
+    MathJax.Hub.Typeset();
+  }, window.MathJax);
+</script>
+
+    
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID: 'a0b09f47cc93396b2dd6',
+      clientSecret: 'bdf8c7211c890d37071003e98dd9879483be6512',
+      repo: 'alyssaasa.github.io',
+      owner: 'alyssaasa',
+      admin: ['alyssaasa'],
+      id: 'd6e5024ba63fd61f460dada93bed3fd0',
+        language: 'zh-CN',
+      distractionFreeMode: 'true'
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+</script>
+
+</body>
+</html>

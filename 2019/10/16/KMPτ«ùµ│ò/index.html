@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/2.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/1.png">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '7.5.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":true,"scrollpercent":true},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":true,"trigger":"auto","top_n_per_article":10,"unescape":false,"preload":false},
+    path: './public/search.xml',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: '复制',
+      copy_success: '复制成功',
+      copy_failure: '复制失败'
+    },
+    sidebarPadding: 40
+  };
+</script>
+
+  <meta name="description" content="参考链接：https://www.zhihu.com/question/21923021参考链接：https://blog.csdn.net/qq_37969433/article/details/82947411 🎃. 问题描述给定一个主串S及一个模式串P，判断模式串是否为主串的子串；若是，返回匹配的第一个元素的位置，否则返回-1；如S=“abcd”，P=“bcd”，则返回1；S=“abcd”">
+<meta name="keywords" content="NLP">
+<meta property="og:type" content="article">
+<meta property="og:title" content="字符串匹配算法－KMP算法">
+<meta property="og:url" content="http://yoursite.com/2019/10/16/KMPτ«ùµ│ò/index.html">
+<meta property="og:site_name" content="各有未来">
+<meta property="og:description" content="参考链接：https://www.zhihu.com/question/21923021参考链接：https://blog.csdn.net/qq_37969433/article/details/82947411 🎃. 问题描述给定一个主串S及一个模式串P，判断模式串是否为主串的子串；若是，返回匹配的第一个元素的位置，否则返回-1；如S=“abcd”，P=“bcd”，则返回1；S=“abcd”">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://yoursite.com/images/kmp/1.gif">
+<meta property="og:image" content="http://yoursite.com/images/kmp/2.jpg">
+<meta property="og:image" content="http://yoursite.com/images/kmp/3.jpg">
+<meta property="og:image" content="http://yoursite.com/images/kmp/4.jpg">
+<meta property="og:image" content="http://yoursite.com/images/kmp/5.jpg">
+<meta property="og:image" content="http://yoursite.com/images/kmp/6.jpg">
+<meta property="og:image" content="http://yoursite.com/images/kmp/7.jpg">
+<meta property="og:image" content="http://yoursite.com/images/kmp/8.jpg">
+<meta property="og:image" content="http://yoursite.com/images/kmp/9.jpg">
+<meta property="og:updated_time" content="2019-10-29T11:51:34.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="字符串匹配算法－KMP算法">
+<meta name="twitter:description" content="参考链接：https://www.zhihu.com/question/21923021参考链接：https://blog.csdn.net/qq_37969433/article/details/82947411 🎃. 问题描述给定一个主串S及一个模式串P，判断模式串是否为主串的子串；若是，返回匹配的第一个元素的位置，否则返回-1；如S=“abcd”，P=“bcd”，则返回1；S=“abcd”">
+<meta name="twitter:image" content="http://yoursite.com/images/kmp/1.gif">
+
+<link rel="canonical" href="http://yoursite.com/2019/10/16/KMPτ«ùµ│ò/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>字符串匹配算法－KMP算法 | 各有未来</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">各有未来</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="none"
+           placeholder="搜索..." spellcheck="false"
+           type="text" id="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/10/16/KMPτ«ùµ│ò/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/toux.jpg">
+      <meta itemprop="name" content="Alyssa">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="各有未来">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          字符串匹配算法－KMP算法
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-10-16 13:29:34" itemprop="dateCreated datePublished" datetime="2019-10-16T13:29:34+08:00">2019-10-16</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2019-10-29 19:51:34" itemprop="dateModified" datetime="2019-10-29T19:51:34+08:00">2019-10-29</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/NLP/" itemprop="url" rel="index">
+                    <span itemprop="name">NLP</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>参考链接：<a href="https://www.zhihu.com/question/21923021" target="_blank" rel="noopener">https://www.zhihu.com/question/21923021</a><br>参考链接：<a href="https://blog.csdn.net/qq_37969433/article/details/82947411" target="_blank" rel="noopener">https://blog.csdn.net/qq_37969433/article/details/82947411</a></p>
+<h4 id="🎃-问题描述"><a href="#🎃-问题描述" class="headerlink" title="🎃. 问题描述"></a>🎃. 问题描述</h4><p>给定一个主串S及一个模式串P，判断模式串是否为主串的子串；若是，返回匹配的第一个元素的位置，否则返回-1；如S=“abcd”，P=“bcd”，则返回1；S=“abcd”，P=“acb”，返回-1。</p>
+<a id="more"></a>
+<h4 id="🎃-朴素算法：回溯法"><a href="#🎃-朴素算法：回溯法" class="headerlink" title="🎃. 朴素算法：回溯法"></a>🎃. 朴素算法：回溯法</h4><p>最简单的方法就是遍历主串S和模式串P，逐个字符进行匹配，不匹配时返回开始的位置，从主串S的下一个字符开始，继续域模式串P匹配。以一张动图来说明：</p>
+<p><img src="/images/kmp/1.gif" alt="img"></p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">//查找出模式串patn在主串src中第一次出现的位置</span></span><br><span class="line"><span class="comment">//返回patn在src中出现的位置，当src中并没有patn时，返回-1</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">search</span><span class="params">(String src, String patn)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> i=<span class="number">0</span>, j=<span class="number">0</span>;</span><br><span class="line">    <span class="keyword">while</span>(i&lt;src.length() &amp;&amp; j&lt;patn.length()) &#123;</span><br><span class="line">        <span class="keyword">if</span>(src.charAt(i)==patn.charAt(j)) &#123;</span><br><span class="line">            i += <span class="number">1</span>;</span><br><span class="line">            j += <span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">//否则，指针回溯，重新开始匹配</span></span><br><span class="line">            i = i - j + <span class="number">1</span>;  <span class="comment">//退回到最开始时比较的位置+1</span></span><br><span class="line">            j = <span class="number">0</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span>( j &gt;= patn.length() )</span><br><span class="line">        <span class="keyword">return</span> i - plen;  <span class="comment">//如果字符串相同的长度大于模式串的长度，则匹配成功</span></span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        <span class="keyword">return</span> -<span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>朴素算法理解简单，但两个串都有依次遍历，时间复杂度为O(n*m)，效率不高。</p>
+<h4 id="🎃-优化算法：KMP算法"><a href="#🎃-优化算法：KMP算法" class="headerlink" title="🎃. 优化算法：KMP算法"></a>🎃. 优化算法：KMP算法</h4><p>KMP算法的核心，是一个被称为<strong>部分匹配表 (Partial Match Table) 的数组</strong>。</p>
+<h5 id="✨-PMT表：对于模式字符串“abababca”，它的PMT如下表所示："><a href="#✨-PMT表：对于模式字符串“abababca”，它的PMT如下表所示：" class="headerlink" title="✨. PMT表：对于模式字符串“abababca”，它的PMT如下表所示："></a>✨. PMT表：对于模式字符串“abababca”，它的PMT如下表所示：</h5><p><img src="/images/kmp/2.jpg" alt="img"></p>
+<p>第一行：字符串的每个字符；<br>第二行：每个字符的索引；<br>重要的是value值：PMT中的value是字符串的前缀集合与后缀集合的交集中最长元素的长度。</p>
+<p>例如，对于 “aba” ，它的前缀集合为{“a”, “ab”}，后缀集合为{“ba”, “a”}。两个集合的交集为{“a”}，那么长度最长的元素就是字符串 “a” 了，长度为1，所以对于 “aba” 而言，它在PMT表中对应的值就是1。再比如，对于字符串 “ababa”，它的前缀集合为{“a”, “ab”, “aba”, “abab”}，它的后缀集合为{“baba”, “aba”, “ba”, “a”}， 两个集合的交集为{“a”, “aba”}，其中最长的元素为 “aba”，长度为3，则 “ababa” 在PMT表中对应的值就是3。</p>
+<h5 id="✨-如何使用PMT表加速字符串的查找："><a href="#✨-如何使用PMT表加速字符串的查找：" class="headerlink" title="✨. 如何使用PMT表加速字符串的查找："></a>✨. 如何使用PMT表加速字符串的查找：</h5><ul>
+<li>主字符串为：“ababababca” -&gt; main_string[0:len_m] </li>
+<li>模式字符串为：“abababca” -&gt; pattern_string[0:len_p] </li>
+</ul>
+<p>在主字符串 <code>main_string</code> 中查找模式字符串 <code>pattern_string</code>。当 <code>main_string[i] != pattern_string[j]</code> 时，我们知道，<code>main_string[i-j:i-1]</code> 和 <code>pattern_string[0:j-1]</code> 是完全一致的。</p>
+<p>具体到下图：<code>i=j=6</code> 时，两个字符不相等，<code>main_string[0:5] = pattern_string[0:5] = “ababab”</code></p>
+<p>那么此时我们应该如何操作：从PMT表中，我们能够看到 <code>PMT[5]</code> 的值（ <code>pattern_string[0:5]</code> 中的前缀集合与后缀集合的交集中最长元素的长度）， <code>PMT[5]=4</code>，也就是说，该字符串中，前缀和后缀相同的最长长度为4，也就是说，<code>pattern_string[0:5]</code> 前四位和后四位是相同的。因为 <code>main_string[0:5] = pattern_string[0:5]</code> ,也就是说，<code>pattern_string[0:5]</code> 的前四位和 <code>main_string[0:5]</code> 的后四位是相同的，那么我们就可以直接进行移动了，保持 <code>i</code> 指针不动，然后将 <code>j</code> 指针指向模式字符串的 <code>PMT[5]</code> 位即可。</p>
+<p>简言之，以图中的例子来说，在 <code>i</code> 处失配，那么主字符串和模式字符串的前边6位就是相同的。又因为模式字符串的前6位，它的前4位前缀和后4位后缀是相同的，所以我们推知主字符串 <code>i</code> 之前的4位和模式字符串开头的4位是相同的。就是图中的灰色部分。那这部分就不用再比较了。</p>
+<p><img src="/images/kmp/3.jpg" alt="img"></p>
+<p>有了上面的思路，我们就可以使用PMT加速字符串的查找了。<strong>我们看到如果是在 <code>j</code> 位失配，那么影响 <code>j</code> 指针回溯的位置的其实是第 <code>j −1</code> 位的 PMT 值</strong>，所以为了编程的方便， 我们不直接使用PMT数组，而是将PMT数组向后偏移一位。我们把新得到的这个数组称为<strong>next数组</strong>。下面给出根据next数组进行字符串匹配加速的字符串匹配程序。其中要注意的一个技巧是，在把PMT进行向右偏移时，第0位的值，我们将其设成了-1，这只是为了编程的方便，并没有其他的意义。在本节的例子中，next数组如下表所示。</p>
+<p><img src="/images/kmp/4.jpg" alt="img"></p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">KMP</span><span class="params">(String text, String pattern)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> i = <span class="number">0</span>, j = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">while</span> (i &lt; text.length() &amp;&amp; j &lt; pattern.length()) &#123;</span><br><span class="line">        <span class="keyword">if</span> (j == -<span class="number">1</span> || text.charAt(i)==pattern.charAt(j)) &#123;</span><br><span class="line">            i++;</span><br><span class="line">            j++;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> </span><br><span class="line">           j = next[j];</span><br><span class="line">        <span class="keyword">if</span> (j == pattern.length())</span><br><span class="line">           <span class="keyword">return</span> i - j;  <span class="comment">// 返回text中的开始位置</span></span><br><span class="line">        <span class="keyword">else</span> </span><br><span class="line">           <span class="keyword">return</span> -<span class="number">1</span>;     <span class="comment">// 匹配失败</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="✨-如何快速求next数组"><a href="#✨-如何快速求next数组" class="headerlink" title="✨. 如何快速求next数组"></a>✨. 如何快速求next数组</h5><p>其实，求next数组的过程完全可以看成字符串匹配的过程，即<strong>以模式字符串为主字符串，以模式字符串的前缀为目标字符串，一旦字符串匹配成功，那么当前的next值就是匹配成功的字符串的长度</strong>。</p>
+<p>具体来说，就是从模式字符串的第一位(注意，不包括第0位)开始对自身进行匹配运算。 在任一位置，能匹配的最长长度就是当前位置的next值。如下图所示。</p>
+<p><strong>p串错开一位匹配，0起始的p串与1起始的p串，前者是瞄准了p的前缀，后者抛弃了p[0]所以是瞄准p的后缀，双方的公共部分即是公共前后缀。</strong></p>
+<p><img src="/images/kmp/5.jpg" alt="img"></p>
+<p><img src="/images/kmp/6.jpg" alt="img"></p>
+<p><img src="/images/kmp/7.jpg" alt="img"></p>
+<p><img src="/images/kmp/8.jpg" alt="img"></p>
+<p><img src="/images/kmp/9.jpg" alt="img"></p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">getNext</span><span class="params">(String pattern, <span class="keyword">int</span>[] next)</span> </span>&#123;</span><br><span class="line">    next[<span class="number">0</span>] = -<span class="number">1</span>;</span><br><span class="line">    <span class="keyword">int</span> i = <span class="number">0</span>, j = -<span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> (i &lt; pattern.length()) &#123;</span><br><span class="line">        <span class="keyword">if</span> (j == -<span class="number">1</span> || p.charAt(i)==p.charAt(j)) &#123;</span><br><span class="line">            ++i;</span><br><span class="line">            ++j;</span><br><span class="line">            next[i] = j;</span><br><span class="line">        &#125;	</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">            j = <span class="number">0</span>;   <span class="comment">//next[j];</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol>
+<li>匹配失败时，总是能够让 pattern 回退到某个位置，使 text 不用回退。</li>
+<li>在字符串比较时，pattern 提供的信息越多，计算复杂度越低。（有兴趣的可以了解一下 Trie 树，这是 text 提供的信息越多，计算复杂度越低的一个例子。）</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          
+          <div class="post-tags">
+              <a href="/tags/NLP/" rel="tag"><i class="fa fa-tag"></i> NLP</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+                <a href="/2019/09/17/Θÿƒσêù/" rel="next" title="队列">
+                  <i class="fa fa-chevron-left"></i> 队列
+                </a>
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+                <a href="/2019/10/17/Σ║ÆΦüöτ╜æµù╢Σ╗úτÜäτñ╛Σ╝ÜΦ»¡Φ¿Çσ¡ª∩╝Üσƒ║Σ║ÄSNSτÜäµûçµ£¼µò░µì«µîûµÄÿ/" rel="prev" title="互联网时代的社会语言学：基于SNS的文本数据挖掘">
+                  互联网时代的社会语言学：基于SNS的文本数据挖掘 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#🎃-问题描述"><span class="nav-number">1.</span> <span class="nav-text">🎃. 问题描述</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#🎃-朴素算法：回溯法"><span class="nav-number">2.</span> <span class="nav-text">🎃. 朴素算法：回溯法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#🎃-优化算法：KMP算法"><span class="nav-number">3.</span> <span class="nav-text">🎃. 优化算法：KMP算法</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#✨-PMT表：对于模式字符串“abababca”，它的PMT如下表所示："><span class="nav-number">3.1.</span> <span class="nav-text">✨. PMT表：对于模式字符串“abababca”，它的PMT如下表所示：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#✨-如何使用PMT表加速字符串的查找："><span class="nav-number">3.2.</span> <span class="nav-text">✨. 如何使用PMT表加速字符串的查找：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#✨-如何快速求next数组"><span class="nav-number">3.3.</span> <span class="nav-text">✨. 如何快速求next数组</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Alyssa"
+      src="/images/toux.jpg">
+  <p class="site-author-name" itemprop="name">Alyssa</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">27</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/alyssaasa" title="GitHub → https://github.com/alyssaasa" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://weibo.com/Alyssaasa" title="Weibo → https://weibo.com/Alyssaasa" rel="noopener" target="_blank"><i class="fa fa-fw fa-weibo"></i>Weibo</a>
+      </span>
+  </div>
+
+
+<script type="text/javascript">
+     var alltags = document.getElementsByClassName('tag-cloud-tags');
+     var tags = alltags[0].getElementsByTagName('a');
+     for (var i = tags.length - 1; i >= 0; i--) {
+       var r=Math.floor(Math.random()*75+130);
+       var g=Math.floor(Math.random()*75+100);
+       var b=Math.floor(Math.random()*75+80);
+       tags[i].style.background = "rgb("+r+","+g+","+b+")";
+     }
+</script>
+
+<style>
+  .tag-cloud-tags{
+    /*font-family: Helvetica, Tahoma, Arial;*/
+    /*font-weight: 100;*/
+    text-align: center;
+    counter-reset: tags;
+  }
+  .tag-cloud-tags a{
+    border-radius: 6px;
+    padding-right: 5px;
+    padding-left: 5px;
+    margin: 8px 5px 10px 3px;
+  }
+  .tag-cloud-tags a:before{
+    content: "🔖";
+  }
+
+  .tag-cloud-tags a:hover{
+     box-shadow: 0px 5px 15px 0px rgba(0,0,0,.4);
+     transform: scale(1.1);
+     /*box-shadow: 10px 10px 15px 2px rgba(0,0,0,.12), 0 0 6px 0 rgba(104, 104, 105, 0.1);*/
+     transition-duration: 0.15s;
+  }
+
+</style>
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2019 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Alyssa</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/pisces.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+  <script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+<script type="text/x-mathjax-config">
+
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ['\\(', '\\)'] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+      equationNumbers: {
+        autoNumber: 'AMS'
+      }
+    }
+  });
+
+  MathJax.Hub.Register.StartupHook('TeX Jax Ready', function() {
+    MathJax.InputJax.TeX.prefilterHooks.Add(function(data) {
+      if (data.display) {
+        var next = data.script.nextSibling;
+        while (next && next.nodeName.toLowerCase() === '#text') {
+          next = next.nextSibling;
+        }
+        if (next && next.nodeName.toLowerCase() === 'br') {
+          next.parentNode.removeChild(next);
+        }
+      }
+    });
+  });
+
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for (i = 0; i < all.length; i += 1) {
+      element = document.getElementById(all[i].inputID + '-Frame').parentNode;
+      if (element.nodeName.toLowerCase() == 'li') {
+        element = element.parentNode;
+      }
+      element.classList.add('has-jax');
+    }
+  });
+</script>
+<script>
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_HTMLorMML', () => {
+    MathJax.Hub.Typeset();
+  }, window.MathJax);
+</script>
+
+    
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID: 'a0b09f47cc93396b2dd6',
+      clientSecret: 'bdf8c7211c890d37071003e98dd9879483be6512',
+      repo: 'alyssaasa.github.io',
+      owner: 'alyssaasa',
+      admin: ['alyssaasa'],
+      id: '755ca78ef682eb2fcda25e404574aaa8',
+        language: 'zh-CN',
+      distractionFreeMode: 'true'
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+</script>
+
+</body>
+</html>

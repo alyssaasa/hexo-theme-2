@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/2.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/1.png">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '7.5.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":true,"scrollpercent":true},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":true,"trigger":"auto","top_n_per_article":10,"unescape":false,"preload":false},
+    path: './public/search.xml',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: '复制',
+      copy_success: '复制成功',
+      copy_failure: '复制失败'
+    },
+    sidebarPadding: 40
+  };
+</script>
+
+  <meta name="description" content="🌈. 时间复杂度1. 一遍循环：O(n)2. 嵌套两遍循环：O(n*n)for(int i=0;i&amp;lt;n;i++)     for(int j=0;j&amp;lt;n;j++)        .....">
+<meta name="keywords" content="二分查找,时间复杂度">
+<meta property="og:type" content="article">
+<meta property="og:title" content="时间复杂度问题">
+<meta property="og:url" content="http://yoursite.com/2019/09/02/µù╢Θù┤σñìµ¥éσ║ªΘù«Θóÿ/index.html">
+<meta property="og:site_name" content="各有未来">
+<meta property="og:description" content="🌈. 时间复杂度1. 一遍循环：O(n)2. 嵌套两遍循环：O(n*n)for(int i=0;i&amp;lt;n;i++)     for(int j=0;j&amp;lt;n;j++)        .....">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://yoursite.com/images/others/tree.png">
+<meta property="og:updated_time" content="2019-10-30T12:36:18.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="时间复杂度问题">
+<meta name="twitter:description" content="🌈. 时间复杂度1. 一遍循环：O(n)2. 嵌套两遍循环：O(n*n)for(int i=0;i&amp;lt;n;i++)     for(int j=0;j&amp;lt;n;j++)        .....">
+<meta name="twitter:image" content="http://yoursite.com/images/others/tree.png">
+
+<link rel="canonical" href="http://yoursite.com/2019/09/02/µù╢Θù┤σñìµ¥éσ║ªΘù«Θóÿ/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>时间复杂度问题 | 各有未来</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">各有未来</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="none"
+           placeholder="搜索..." spellcheck="false"
+           type="text" id="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/09/02/µù╢Θù┤σñìµ¥éσ║ªΘù«Θóÿ/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/toux.jpg">
+      <meta itemprop="name" content="Alyssa">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="各有未来">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          时间复杂度问题
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-09-02 23:29:35" itemprop="dateCreated datePublished" datetime="2019-09-02T23:29:35+08:00">2019-09-02</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2019-10-30 20:36:18" itemprop="dateModified" datetime="2019-10-30T20:36:18+08:00">2019-10-30</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/算法/" itemprop="url" rel="index">
+                    <span itemprop="name">算法</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h4 id="🌈-时间复杂度"><a href="#🌈-时间复杂度" class="headerlink" title="🌈. 时间复杂度"></a>🌈. 时间复杂度</h4><h5 id="1-一遍循环：O-n"><a href="#1-一遍循环：O-n" class="headerlink" title="1. 一遍循环：O(n)"></a>1. 一遍循环：O(n)</h5><h5 id="2-嵌套两遍循环：O-n-n"><a href="#2-嵌套两遍循环：O-n-n" class="headerlink" title="2. 嵌套两遍循环：O(n*n)"></a>2. 嵌套两遍循环：O(n*n)</h5><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;n;i++) </span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> j=<span class="number">0</span>;j&lt;n;j++)</span><br><span class="line">        .....</span><br></pre></td></tr></table></figure>
+<a id="more"></a>
+<h5 id="3-O-log-n-与-O-n-log-n-分析方法："><a href="#3-O-log-n-与-O-n-log-n-分析方法：" class="headerlink" title="3. O(log n) 与 O(n log n) 分析方法："></a>3. O(log n) 与 O(n log n) 分析方法：</h5><p>📍 自理解：一般这种带有 <code>logn</code> 都是有递归操作的。例如二分查找，就是每次我找到中间位置，然后如果查找的值大于当前值，那么我只需在后一半中继续查找，如果查找的值小于当前值，就在前一半中继续查找，每次我都可以减少一半数量的元素。其时间复杂度为 <code>O(logn)</code> 。像归并排序, 虽然我每次把整个array分成了两个部分，但是两个部分都需要去进行递归处理，那么时间复杂度就是 <code>O(nlogn)</code> 。</p>
+<p>📍 通过递归深度来计算时间复杂度：</p>
+<p><img src="/images/others/tree.png" alt></p>
+<p><strong>快速排序的时间复杂度：</strong>快速排序是通过交换，找到中间位置的元素，然后左右两部分分别去递归进行排序。</p>
+<p>如上图所示，如果快排每次选的节点恰好为中间节点，也就是二叉树是平衡的，那么二叉树的深度为 <code>log(n+1)</code> ，而在遍历每一层的时候，n个节点都会访问到。如上图 <code>B</code> 和 <code>C</code> 节点，虽然递归后不是一次访问n个节点，<code>B</code> 和 <code>C</code> 两次递归加起来就是总的节点个数n，一共有 <code>log(n+1)</code> 层，所以其时间复杂度为 <code>O(n*log(n+1)) = O(nlogn)</code></p>
+<p><strong>二分查找的时间复杂度：</strong> 二分查找是每次访问中间节点，判断中间节点和我们要找的节点之间的大小，如果中间节点大于目标节点，那么只访问左半部分，否则只访问右半部分。</p>
+<p>如上图所示，二叉树的深度为 <code>log(n+1)</code> ，先访问递归 <code>A</code>, 如果目标节点大于当前值 ，那么访问递归 <code>C</code>， 如果目标节点小于当前值，那么访问递归 <code>F</code>， 如果目标节点小于当前值，那么访问递归 <code>L</code>。从这个路径来看，在每一层的递归时，只需要访问一个节点，其时间复杂度为 <code>O(1)</code> 。二叉树的深度为 <code>log(n+1)</code> ， 所以二分查找的时间复杂度为 <code>O(1*log(n+1)) = O(logn)</code></p>
+<p><strong>在未排序数组中寻找第k大的数的时间复杂度</strong>：寻找第k大的数，利用的是快速排序的思想，经过一轮排序，我们会找到一个元素的最终位置index，如果k大于index，那么我只要在后面继续快排，如果k小于index，那么就在前面快排。它和快排的区别在于我只要在一半的部分进行快排即可，而不需要两侧都进行快排。</p>
+<p>如上图所示，二叉树的深度为 <code>log(n+1)</code> ，</p>
+<ul>
+<li>在第一层时，<code>n</code> 个节点都需要被访问到。</li>
+<li>如果 k 大于 index，那么执行 <code>C</code> 侧的递归即可，这时需要访问的节点数为 <code>n/2</code>。 </li>
+<li>如果 k 大于 index，那么执行 <code>G</code> 侧的递归即可，这时需要访问的节点数为 <code>n/4</code>。 </li>
+<li>二叉树的深度为 <code>log(n+1)</code> ， 那么一共需要：<script type="math/tex">n + \frac{n}{2} + \frac{n}{4} +...+ \frac{n}{2^{log(n+1)-1}} = \frac{2n^2}{n+1} = O(n)</script></li>
+</ul>
+<h4 id="🌈-相关例题"><a href="#🌈-相关例题" class="headerlink" title="🌈. 相关例题"></a>🌈. 相关例题</h4><h5 id="1-leetcode-169-找出数组中出现次数大于一半的元素"><a href="#1-leetcode-169-找出数组中出现次数大于一半的元素" class="headerlink" title="1.  leetcode 169. 找出数组中出现次数大于一半的元素"></a>1.  <a href="https://leetcode.com/problems/majority-element/" target="_blank" rel="noopener">leetcode 169. 找出数组中出现次数大于一半的元素</a></h5><figure class="highlight java"><table><tr><td class="code"><pre><span class="line">给定一个大小为 n 的数组，找到其中的众数。众数是指在数组中出现次数大于 ⌊ n/<span class="number">2</span> ⌋ 的元素。</span><br><span class="line">你可以假设数组是非空的，并且给定的数组总是存在众数。</span><br></pre></td></tr></table></figure>
+<ul>
+<li>统计一遍。O(n)， 但需要额外的空间保存每个数字出现的次数。</li>
+<li>排序。因为该元素出现次数大于一半，也就是说，排序后中间位置的数字一定是出现次数<strong>大于</strong> <code>⌊ n/2 ⌋</code> 的元素。而排序的时间复杂度最少也为O(nlogn).</li>
+<li>排序后，中间的数字一定是出现次数<strong>大于</strong> <code>⌊ n/2 ⌋</code> 的元素，也就是说我们只要找到排序后的中间元素就好了。这道题就可以转换为：找出第n/2大的数。</li>
+<li>哈哈，这样就可以利用快排的特点了，那么就可以把时间复杂度缩小到O(n)。</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">partition</span><span class="params">(<span class="keyword">int</span>[] nums, <span class="keyword">int</span> begin, <span class="keyword">int</span> end)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> tmp_value = nums[begin];</span><br><span class="line">    <span class="keyword">while</span>(begin&lt;end) &#123;</span><br><span class="line">        <span class="keyword">while</span>(begin&lt;end &amp;&amp; nums[end]&gt;=tmp_value) end -= <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">if</span>(begin &lt; end) nums[begin] = nums[end];</span><br><span class="line">        <span class="keyword">while</span>(begin&lt;end &amp;&amp; nums[begin]&lt;=tmp_value) begin += <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">if</span>(begin &lt; end) nums[end] = nums[begin];</span><br><span class="line">    &#125;</span><br><span class="line">    nums[begin] = tmp_value;</span><br><span class="line">    <span class="keyword">return</span> begin;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">majorityElement</span><span class="params">(<span class="keyword">int</span>[] nums)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> index = <span class="number">0</span>, begin = <span class="number">0</span>, end = nums.length-<span class="number">1</span>;</span><br><span class="line">    <span class="keyword">while</span>(index!=nums.length/<span class="number">2</span>) &#123;</span><br><span class="line">        index = partition(nums, begin, end);</span><br><span class="line">        <span class="keyword">if</span>(index&gt;nums.length/<span class="number">2</span>) end = index-<span class="number">1</span>;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span>(index&lt;nums.length/<span class="number">2</span>) begin = index+<span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> nums[index];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="2-剑指offer-找出数组中最小的k个数"><a href="#2-剑指offer-找出数组中最小的k个数" class="headerlink" title="2. 剑指offer. 找出数组中最小的k个数"></a>2. 剑指offer. 找出数组中最小的k个数</h5><ul>
+<li>方法一：和上面一样，利用二分查找，找到最小的k个数，那么只要找到第k+1大的数，那么他之前的就是最小的k个数。这种方式会改变数组内的值</li>
+<li>方法二：不改变数组的值。设置一个容器，存储空间为k，遍历数组，每遍历到一个数，判断容器里的最大值和当前值大小，如果当前值小于容器中的最大值，删除容器中的最大值，用当前值替换。</li>
+<li>而在容器中找到最大值插入删除的操作，最省时的是构建最大堆。时间复杂度为O(log k)。那么总的时间复杂度就是O(n log k)</li>
+<li>第二种方法对<strong>海量数据</strong>很有用，因为第一种方法需要一次把所有的数据都读进来，而第二种方法可以一个一个读入，辅助空间为k即可。n很大k很小时，这种方法很好。</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h5 id="3-剑指offer-在排序数组中查找某数字出现的次数"><a href="#3-剑指offer-在排序数组中查找某数字出现的次数" class="headerlink" title="3.  剑指offer. 在排序数组中查找某数字出现的次数"></a>3.  剑指offer. 在排序数组中查找某数字出现的次数</h5><ul>
+<li>利用二分查找，找到重复数字的左右端点。</li>
+<li>查找左端点的时候，利用二分查找，如果当前节点为重复数字，看它和左边的节点是否相等，如果不相等，那么该节点为左端点。 右端点也是一样的。</li>
+<li>找到左右端点的位置，就可以知道其出现次数了</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h5 id="4-剑指offer-0到n-1中缺失的数字"><a href="#4-剑指offer-0到n-1中缺失的数字" class="headerlink" title="4.  剑指offer. 0到n-1中缺失的数字"></a>4.  剑指offer. 0到n-1中缺失的数字</h5><figure class="highlight java"><table><tr><td class="code"><pre><span class="line">长度为n-<span class="number">1</span>的递增序列，其中只有一个数字不存在。找到这个不存在的数字。</span><br></pre></td></tr></table></figure>
+<ul>
+<li>就是找到第一个index与值不相等的元素。</li>
+<li>二分查找 。如果当前值和index不等，并且前一个值和index相等，那么这个值就是我们想要的。</li>
+</ul>
+<h5 id="5-剑指offer-递增序列，找到值与index相等的任意一个元素。"><a href="#5-剑指offer-递增序列，找到值与index相等的任意一个元素。" class="headerlink" title="5. 剑指offer.  递增序列，找到值与index相等的任意一个元素。"></a>5. 剑指offer.  递增序列，找到值与index相等的任意一个元素。</h5><ul>
+<li>如果当前值比index小，那么它前面不可能有了，只能向后找</li>
+<li>如果当前值比index 大，那么它后面是不可能有了，只能向前找。</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h5 id="6-把数字翻译成字符串。"><a href="#6-把数字翻译成字符串。" class="headerlink" title="6. 把数字翻译成字符串。"></a>6. 把数字翻译成字符串。</h5><p>p 231.  46题</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h5 id="7-leetcode-4-找到两个已排序数组的中位数"><a href="#7-leetcode-4-找到两个已排序数组的中位数" class="headerlink" title="7. leetcode 4. 找到两个已排序数组的中位数"></a>7. <a href="https://leetcode.com/problems/median-of-two-sorted-arrays/" target="_blank" rel="noopener">leetcode 4. 找到两个已排序数组的中位数</a></h5><ul>
+<li>最简单直接的方法，先将两个有序数组合并成一个有序数组，然后找到中位数。</li>
+<li>合并时可以到 <code>(nums1.length + nums2.length)/2 + 1</code> 的时候就停止，因为我们的目的就是找中位数。</li>
+<li>这种方法的时间复杂度是 <code>O(m+n)</code> 。 <code>m</code> 和 <code>n</code> 分别为两个数组的长度。</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">int</span>[] merge(<span class="keyword">int</span>[] nums1, <span class="keyword">int</span>[] nums2) &#123;</span><br><span class="line">    <span class="keyword">int</span> length = nums1.length + nums2.length;</span><br><span class="line">    <span class="keyword">int</span>[] res_arr = <span class="keyword">new</span> <span class="keyword">int</span>[length];</span><br><span class="line">    <span class="keyword">if</span>(nums1.length==<span class="number">0</span>) res_arr = Arrays.copyOf(nums2, nums2.length);</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span>(nums2.length==<span class="number">0</span>) res_arr = Arrays.copyOf(nums1, nums1.length);</span><br><span class="line">    <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">int</span> begin_1 = <span class="number">0</span>, begin_2 = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;length;i++) &#123;</span><br><span class="line">            <span class="keyword">if</span>(begin_1&gt;=nums1.length) &#123;</span><br><span class="line">                res_arr[i] = nums2[begin_2];</span><br><span class="line">                begin_2 += <span class="number">1</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span> <span class="keyword">if</span>(begin_2&gt;=nums2.length) &#123;</span><br><span class="line">                res_arr[i] = nums1[begin_1];</span><br><span class="line">                begin_1 += <span class="number">1</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="keyword">if</span>(nums1[begin_1]&lt;nums2[begin_2]) &#123;</span><br><span class="line">                    res_arr[i] = nums1[begin_1];</span><br><span class="line">                    begin_1 += <span class="number">1</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span> &#123;</span><br><span class="line">                    res_arr[i] = nums2[begin_2];</span><br><span class="line">                    begin_2 += <span class="number">1</span>; </span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span>(i==length/<span class="number">2</span>+<span class="number">1</span>)</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> res_arr;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">double</span> <span class="title">findMedianSortedArrays</span><span class="params">(<span class="keyword">int</span>[] nums1, <span class="keyword">int</span>[] nums2)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> length = nums1.length + nums2.length;</span><br><span class="line">    <span class="keyword">int</span>[] res = merge(nums1, nums2);</span><br><span class="line">    <span class="keyword">if</span>(length%<span class="number">2</span>==<span class="number">0</span>) <span class="keyword">return</span> (res[length/<span class="number">2</span>-<span class="number">1</span>] + res[length/<span class="number">2</span>])/<span class="number">2.0</span>;</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">return</span> res[length/<span class="number">2</span>];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>涉及到有序数组，涉及到查找，就要想到<strong>二分查找</strong>！！</p>
+</li>
+<li><p>解释：<a href="https://youtu.be/LPFhl65R7ww" target="_blank" rel="noopener">https://youtu.be/LPFhl65R7ww</a></p>
+</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">double</span> <span class="title">findMedianSortedArrays</span><span class="params">(<span class="keyword">int</span>[] nums1, <span class="keyword">int</span>[] nums2)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(nums2.length&lt;nums1.length) &#123; <span class="comment">//为了让nums1中存的是短的数组</span></span><br><span class="line">        <span class="keyword">int</span>[] tmp = nums1;</span><br><span class="line">        nums1 = nums2;</span><br><span class="line">        nums2 = tmp;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">int</span> begin = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">int</span> end = nums1.length;</span><br><span class="line">    <span class="keyword">int</span> length = (nums1.length + nums2.length + <span class="number">1</span>)/<span class="number">2</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span>(begin&lt;=end) &#123;</span><br><span class="line">        <span class="keyword">int</span> mid1 = (begin + end)/<span class="number">2</span>;</span><br><span class="line">        <span class="keyword">int</span> mid2 = length - mid1;</span><br><span class="line">        <span class="keyword">if</span>(mid1&lt;nums1.length &amp;&amp; nums2[mid2-<span class="number">1</span>]&gt;nums1[mid1]) &#123;</span><br><span class="line">            begin = mid1 + <span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span>(mid1&gt;<span class="number">0</span> &amp;&amp; nums1[mid1-<span class="number">1</span>]&gt;nums2[mid2])&#123;</span><br><span class="line">            end = mid1 - <span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">int</span> max_of_left = <span class="number">0</span>;</span><br><span class="line">            <span class="keyword">if</span>(mid1==<span class="number">0</span>) max_of_left = nums2[mid2-<span class="number">1</span>];</span><br><span class="line">            <span class="keyword">else</span> <span class="keyword">if</span>(mid2==<span class="number">0</span>) max_of_left = nums1[mid1-<span class="number">1</span>];</span><br><span class="line">            <span class="keyword">else</span> max_of_left =  Math.max(nums1[mid1-<span class="number">1</span>], nums2[mid2-<span class="number">1</span>]);</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span>((nums1.length + nums2.length)%<span class="number">2</span>==<span class="number">1</span>) <span class="keyword">return</span> max_of_left;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">int</span> min_of_right = <span class="number">0</span>;</span><br><span class="line">            <span class="keyword">if</span>(mid1==nums1.length) min_of_right = nums2[mid2];</span><br><span class="line">            <span class="keyword">else</span> <span class="keyword">if</span>(mid2==nums2.length) min_of_right = nums1[mid1];</span><br><span class="line">            <span class="keyword">else</span> min_of_right =  Math.min(nums1[mid1], nums2[mid2]);</span><br><span class="line"></span><br><span class="line">            <span class="keyword">return</span> (max_of_left + min_of_right)/<span class="number">2.0</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="20-leetcode-380-O-1-时间插入、删除、随即抽取"><a href="#20-leetcode-380-O-1-时间插入、删除、随即抽取" class="headerlink" title="20. leetcode 380. O(1)时间插入、删除、随即抽取"></a>20. <a href="https://leetcode.com/problems/insert-delete-getrandom-o1/" target="_blank" rel="noopener">leetcode 380. O(1)时间插入、删除、随即抽取</a></h5><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function">Design a data structure that supports all following operations in average <span class="title">O</span><span class="params">(<span class="number">1</span>)</span> time.</span></span><br><span class="line"><span class="function">1. <span class="title">insert</span><span class="params">(val)</span>: Inserts an item val to the set <span class="keyword">if</span> not already present.</span></span><br><span class="line"><span class="function">2. <span class="title">remove</span><span class="params">(val)</span>: Removes an item val from the set <span class="keyword">if</span> present.</span></span><br><span class="line"><span class="function">3. getRandom: Returns a random element from current set of elements. Each element must have the same probability of being returned.</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>O(1)时间进行插入和删除操作，也就是不能遍历。</li>
+<li>而且不能删除list中间的某一个元素，因为删除list中间的某一个元素的时间复杂度是O(n), 因为后面的元素需要全部向前面移动一位，也就是如果要使用list，那么只能删除最后一个元素。</li>
+<li>可以使用hashmap，因为hashmap相当于链表，这道题又是set，也就是不存在重复元素。但是因为最后要随机抽取元素，只用map也不行，因为随机一个index之后，不能在map中去遍历，因为时间复杂度需要是O(1).</li>
+<li>所以只能map和list一起用，map中存储元素值和其在list中的索引，每删除一个元素，那么我们需要把list中的最后一个元素和当前元素交换，然后删除最后一个元素。并且改变map中最后一个元素的value值，也就是在list中的索引值。这样随机取数的时候只要在list中get(index)即可。</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Your RandomizedSet object will be instantiated and called as such:</span></span><br><span class="line"><span class="comment"> * RandomizedSet obj = new RandomizedSet();</span></span><br><span class="line"><span class="comment"> * boolean param_1 = obj.insert(val);</span></span><br><span class="line"><span class="comment"> * boolean param_2 = obj.remove(val);</span></span><br><span class="line"><span class="comment"> * int param_3 = obj.getRandom();</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">RandomizedSet</span> </span>&#123;</span><br><span class="line">    <span class="comment">// map里面存储值和该值在list种的索引</span></span><br><span class="line">    <span class="keyword">private</span> Map&lt;Integer, Integer&gt; map;</span><br><span class="line">    <span class="keyword">private</span> ArrayList&lt;Integer&gt; list;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Initialize your data structure here. </span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">RandomizedSet</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        map = <span class="keyword">new</span> HashMap();</span><br><span class="line">        list = <span class="keyword">new</span> ArrayList();</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// Inserts a value to the set. </span></span><br><span class="line">    <span class="comment">// Returns true if the set did not already contain the specified element. </span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">insert</span><span class="params">(<span class="keyword">int</span> val)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(map.putIfAbsent(val, list.size())==<span class="keyword">null</span>) &#123;</span><br><span class="line">            list.add(val);</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// Removes a value from the set. </span></span><br><span class="line">    <span class="comment">// Returns true if the set contained the specified element.</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">remove</span><span class="params">(<span class="keyword">int</span> val)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> index = map.getOrDefault(val, Integer.MAX_VALUE);</span><br><span class="line">        <span class="keyword">if</span>(index==Integer.MAX_VALUE) <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">        <span class="keyword">else</span> &#123;</span><br><span class="line">            map.remove(val);</span><br><span class="line">            <span class="keyword">if</span>(index&lt;list.size()-<span class="number">1</span>) &#123;</span><br><span class="line">                <span class="comment">// 用list中的最后一个元素替换该位置的值</span></span><br><span class="line">                list.set(index, list.get(list.size()-<span class="number">1</span>)); </span><br><span class="line">                <span class="comment">// 改变map中该元素对应的value值，即其在list中的索引</span></span><br><span class="line">                map.put(list.get(list.size()-<span class="number">1</span>), index); </span><br><span class="line">            &#125;</span><br><span class="line">            list.remove(list.size()-<span class="number">1</span>); <span class="comment">// 删除list中的最后一个元素</span></span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; </span><br><span class="line">    </span><br><span class="line">    <span class="comment">// Get a random element from the set. </span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getRandom</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> p = (<span class="keyword">int</span>)(Math.random()*(list.size()));</span><br><span class="line">        <span class="keyword">return</span> list.get(p);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="21-leetcode-381-O-1-时间插入、删除、随即抽取-允许重复"><a href="#21-leetcode-381-O-1-时间插入、删除、随即抽取-允许重复" class="headerlink" title="21.  leetcode 381. O(1)时间插入、删除、随即抽取 (允许重复)"></a>21.  <a href="https://leetcode.com/problems/insert-delete-getrandom-o1-duplicates-allowed/" target="_blank" rel="noopener">leetcode 381. O(1)时间插入、删除、随即抽取 (允许重复)</a></h5><figure class="highlight java"><table><tr><td class="code"><pre><span class="line">Note: Duplicate elements are allowed.</span><br><span class="line"><span class="number">1</span>. insert(val): Inserts an item val to the collection.</span><br><span class="line"><span class="number">2</span>. remove(val): Removes an item val from the collection <span class="keyword">if</span> present.</span><br><span class="line"><span class="number">3</span>. getRandom: Returns a random element from current collection of elements. The probability of each element being returned is linearly related to the number of same value the collection contains.</span><br></pre></td></tr></table></figure>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          
+          <div class="post-tags">
+              <a href="/tags/二分查找/" rel="tag"><i class="fa fa-tag"></i> 二分查找</a>
+              <a href="/tags/时间复杂度/" rel="tag"><i class="fa fa-tag"></i> 时间复杂度</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+                <a href="/2019/09/01/µ┤ùτëîτ«ùµ│ò/" rel="next" title="洗牌算法">
+                  <i class="fa fa-chevron-left"></i> 洗牌算法
+                </a>
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+                <a href="/2019/09/08/Σ╜ìΦ┐Éτ«ù/" rel="prev" title="位运算">
+                  位运算 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#🌈-时间复杂度"><span class="nav-number">1.</span> <span class="nav-text">🌈. 时间复杂度</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#1-一遍循环：O-n"><span class="nav-number">1.1.</span> <span class="nav-text">1. 一遍循环：O(n)</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-嵌套两遍循环：O-n-n"><span class="nav-number">1.2.</span> <span class="nav-text">2. 嵌套两遍循环：O(n*n)</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3-O-log-n-与-O-n-log-n-分析方法："><span class="nav-number">1.3.</span> <span class="nav-text">3. O(log n) 与 O(n log n) 分析方法：</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#🌈-相关例题"><span class="nav-number">2.</span> <span class="nav-text">🌈. 相关例题</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#1-leetcode-169-找出数组中出现次数大于一半的元素"><span class="nav-number">2.1.</span> <span class="nav-text">1.  leetcode 169. 找出数组中出现次数大于一半的元素</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-剑指offer-找出数组中最小的k个数"><span class="nav-number">2.2.</span> <span class="nav-text">2. 剑指offer. 找出数组中最小的k个数</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3-剑指offer-在排序数组中查找某数字出现的次数"><span class="nav-number">2.3.</span> <span class="nav-text">3.  剑指offer. 在排序数组中查找某数字出现的次数</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#4-剑指offer-0到n-1中缺失的数字"><span class="nav-number">2.4.</span> <span class="nav-text">4.  剑指offer. 0到n-1中缺失的数字</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#5-剑指offer-递增序列，找到值与index相等的任意一个元素。"><span class="nav-number">2.5.</span> <span class="nav-text">5. 剑指offer.  递增序列，找到值与index相等的任意一个元素。</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#6-把数字翻译成字符串。"><span class="nav-number">2.6.</span> <span class="nav-text">6. 把数字翻译成字符串。</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#7-leetcode-4-找到两个已排序数组的中位数"><span class="nav-number">2.7.</span> <span class="nav-text">7. leetcode 4. 找到两个已排序数组的中位数</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#20-leetcode-380-O-1-时间插入、删除、随即抽取"><span class="nav-number">2.8.</span> <span class="nav-text">20. leetcode 380. O(1)时间插入、删除、随即抽取</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#21-leetcode-381-O-1-时间插入、删除、随即抽取-允许重复"><span class="nav-number">2.9.</span> <span class="nav-text">21.  leetcode 381. O(1)时间插入、删除、随即抽取 (允许重复)</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Alyssa"
+      src="/images/toux.jpg">
+  <p class="site-author-name" itemprop="name">Alyssa</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">27</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/alyssaasa" title="GitHub → https://github.com/alyssaasa" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://weibo.com/Alyssaasa" title="Weibo → https://weibo.com/Alyssaasa" rel="noopener" target="_blank"><i class="fa fa-fw fa-weibo"></i>Weibo</a>
+      </span>
+  </div>
+
+
+<script type="text/javascript">
+     var alltags = document.getElementsByClassName('tag-cloud-tags');
+     var tags = alltags[0].getElementsByTagName('a');
+     for (var i = tags.length - 1; i >= 0; i--) {
+       var r=Math.floor(Math.random()*75+130);
+       var g=Math.floor(Math.random()*75+100);
+       var b=Math.floor(Math.random()*75+80);
+       tags[i].style.background = "rgb("+r+","+g+","+b+")";
+     }
+</script>
+
+<style>
+  .tag-cloud-tags{
+    /*font-family: Helvetica, Tahoma, Arial;*/
+    /*font-weight: 100;*/
+    text-align: center;
+    counter-reset: tags;
+  }
+  .tag-cloud-tags a{
+    border-radius: 6px;
+    padding-right: 5px;
+    padding-left: 5px;
+    margin: 8px 5px 10px 3px;
+  }
+  .tag-cloud-tags a:before{
+    content: "🔖";
+  }
+
+  .tag-cloud-tags a:hover{
+     box-shadow: 0px 5px 15px 0px rgba(0,0,0,.4);
+     transform: scale(1.1);
+     /*box-shadow: 10px 10px 15px 2px rgba(0,0,0,.12), 0 0 6px 0 rgba(104, 104, 105, 0.1);*/
+     transition-duration: 0.15s;
+  }
+
+</style>
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2019 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Alyssa</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/pisces.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+  <script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+<script type="text/x-mathjax-config">
+
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ['\\(', '\\)'] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+      equationNumbers: {
+        autoNumber: 'AMS'
+      }
+    }
+  });
+
+  MathJax.Hub.Register.StartupHook('TeX Jax Ready', function() {
+    MathJax.InputJax.TeX.prefilterHooks.Add(function(data) {
+      if (data.display) {
+        var next = data.script.nextSibling;
+        while (next && next.nodeName.toLowerCase() === '#text') {
+          next = next.nextSibling;
+        }
+        if (next && next.nodeName.toLowerCase() === 'br') {
+          next.parentNode.removeChild(next);
+        }
+      }
+    });
+  });
+
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for (i = 0; i < all.length; i += 1) {
+      element = document.getElementById(all[i].inputID + '-Frame').parentNode;
+      if (element.nodeName.toLowerCase() == 'li') {
+        element = element.parentNode;
+      }
+      element.classList.add('has-jax');
+    }
+  });
+</script>
+<script>
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_HTMLorMML', () => {
+    MathJax.Hub.Typeset();
+  }, window.MathJax);
+</script>
+
+    
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID: 'a0b09f47cc93396b2dd6',
+      clientSecret: 'bdf8c7211c890d37071003e98dd9879483be6512',
+      repo: 'alyssaasa.github.io',
+      owner: 'alyssaasa',
+      admin: ['alyssaasa'],
+      id: 'abe71635df2ff15288216318a1e7cdc7',
+        language: 'zh-CN',
+      distractionFreeMode: 'true'
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+</script>
+
+</body>
+</html>

@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/2.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/1.png">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '7.5.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":true,"scrollpercent":true},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":true,"trigger":"auto","top_n_per_article":10,"unescape":false,"preload":false},
+    path: './public/search.xml',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: '复制',
+      copy_success: '复制成功',
+      copy_failure: '复制失败'
+    },
+    sidebarPadding: 40
+  };
+</script>
+
+  <meta name="description" content="原文链接: https://zhuanlan.zhihu.com/p/63186101 随着微软的Deep Crossing，Google的Wide&amp;amp;Deep，以及FNN，PNN等一大批优秀的深度学习CTR预估模型在2016年被提出，计算广告和推荐系统领域全面进入了深度学习时代，时至今日，深度学习CTR模型已经成为广告和推荐领域毫无疑问的主流。在进入深度学习时代之后，CTR模型不仅在表达能">
+<meta name="keywords" content="NLP,深度学习">
+<meta property="og:type" content="article">
+<meta property="og:title" content="基于深度学习的CTR预估模型">
+<meta property="og:url" content="http://yoursite.com/2019/11/06/µ╖▒σ║ªσ¡ªΣ╣áCTRΘóäΣ╝░µ¿íσ₧ï/index.html">
+<meta property="og:site_name" content="各有未来">
+<meta property="og:description" content="原文链接: https://zhuanlan.zhihu.com/p/63186101 随着微软的Deep Crossing，Google的Wide&amp;amp;Deep，以及FNN，PNN等一大批优秀的深度学习CTR预估模型在2016年被提出，计算广告和推荐系统领域全面进入了深度学习时代，时至今日，深度学习CTR模型已经成为广告和推荐领域毫无疑问的主流。在进入深度学习时代之后，CTR模型不仅在表达能">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://yoursite.com/images/ctr/10.jpg">
+<meta property="og:image" content="http://yoursite.com/images/ctr/11.jpg">
+<meta property="og:image" content="http://yoursite.com/images/ctr/12.jpg">
+<meta property="og:image" content="http://yoursite.com/images/ctr/13.jpg">
+<meta property="og:image" content="http://yoursite.com/images/ctr/14.jpg">
+<meta property="og:image" content="http://yoursite.com/images/ctr/15.jpg">
+<meta property="og:image" content="http://yoursite.com/images/ctr/16.jpg">
+<meta property="og:image" content="http://yoursite.com/images/ctr/17.jpg">
+<meta property="og:image" content="http://yoursite.com/images/ctr/18.jpg">
+<meta property="og:image" content="http://yoursite.com/images/ctr/19.jpg">
+<meta property="og:image" content="http://yoursite.com/images/ctr/20.jpg">
+<meta property="og:updated_time" content="2019-11-06T12:54:24.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="基于深度学习的CTR预估模型">
+<meta name="twitter:description" content="原文链接: https://zhuanlan.zhihu.com/p/63186101 随着微软的Deep Crossing，Google的Wide&amp;amp;Deep，以及FNN，PNN等一大批优秀的深度学习CTR预估模型在2016年被提出，计算广告和推荐系统领域全面进入了深度学习时代，时至今日，深度学习CTR模型已经成为广告和推荐领域毫无疑问的主流。在进入深度学习时代之后，CTR模型不仅在表达能">
+<meta name="twitter:image" content="http://yoursite.com/images/ctr/10.jpg">
+
+<link rel="canonical" href="http://yoursite.com/2019/11/06/µ╖▒σ║ªσ¡ªΣ╣áCTRΘóäΣ╝░µ¿íσ₧ï/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>基于深度学习的CTR预估模型 | 各有未来</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">各有未来</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="none"
+           placeholder="搜索..." spellcheck="false"
+           type="text" id="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/11/06/µ╖▒σ║ªσ¡ªΣ╣áCTRΘóäΣ╝░µ¿íσ₧ï/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/toux.jpg">
+      <meta itemprop="name" content="Alyssa">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="各有未来">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          基于深度学习的CTR预估模型
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2019-11-06 18:32:14 / 修改时间：20:54:24" itemprop="dateCreated datePublished" datetime="2019-11-06T18:32:14+08:00">2019-11-06</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/NLP/" itemprop="url" rel="index">
+                    <span itemprop="name">NLP</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>原文链接: <a href="https://zhuanlan.zhihu.com/p/63186101" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/63186101</a></p>
+<p>随着微软的Deep Crossing，Google的Wide&amp;Deep，以及FNN，PNN等一大批优秀的深度学习CTR预估模型在2016年被提出，<strong>计算广告和推荐系统领域全面进入了深度学习时代</strong>，时至今日，深度学习CTR模型已经成为广告和推荐领域毫无疑问的主流。在进入深度学习时代之后，CTR模型不仅在表达能力、模型效果上有了质的提升，而且大量借鉴并融合了深度学习在图像、语音以及自然语言处理方向的成果，在模型结构上进行了快速的演化。 </p>
+<a id="more"></a>
+<p>本文总结了广告、推荐领域最为流行的10个深度学习CTR模型的结构特点，构建了它们之间的演化图谱。选择模型的标准尽量遵循下面三个原则： </p>
+<ol>
+<li><strong>模型的在业界影响力较大的；</strong></li>
+<li><strong>已经被Google，微软，阿里等知名互联网公司成功应用的；</strong></li>
+<li><strong>工程导向的，而不是仅用实验数据验证或学术创新用的。</strong></li>
+</ol>
+<p>下面首先列出这张<strong>深度学习CTR模型的演化图谱</strong>，再对其进行逐一介绍：</p>
+<p><img src="/images/ctr/10.jpg" alt="img"></p>
+<h4 id="🎃-Deep-Crossing-2016-——-深度学习CTR模型的-base-model"><a href="#🎃-Deep-Crossing-2016-——-深度学习CTR模型的-base-model" class="headerlink" title="🎃. Deep Crossing (2016) —— 深度学习CTR模型的 base model"></a>🎃. Deep Crossing (2016) —— 深度学习CTR模型的 base model</h4><p>微软于2016年提出的Deep Crossing可以说是<strong>深度学习CTR模型的最典型和基础性的模型</strong>。模型结构如上图所示，它涵盖了深度CTR模型最典型的要素，即通过加入embedding层将稀疏特征转化为低维稠密特征，用stacking layer，或者叫做concat layer将分段的特征向量连接起来，再通过多层神经网络完成特征的组合、转换，最终用scoring layer完成CTR的计算。跟经典DNN有所不同的是，Deep crossing采用的multilayer perceptron是由残差网络组成的，这无疑得益于MSRA著名研究员何恺明提出的著名的152层ResNet。 </p>
+<p><img src="/images/ctr/11.jpg" alt="img"></p>
+<p>论文📃：<a href="https://link.zhihu.com/?target=https%3A//github.com/wzhe06/Reco-papers/blob/master/Deep%20Learning%20Recommender%20System/%5BDeep%20Crossing%5D%20Deep%20Crossing%20-%20Web-Scale%20Modeling%20without%20Manually%20Crafted%20Combinatorial%20Features%20%28Microsoft%202016%29.pdf" target="_blank" rel="noopener">[Deep Crossing] Deep Crossing - Web-Scale Modeling without Manually Crafted Combinatorial Features (Microsoft 2016)</a> </p>
+<h4 id="🎃-FNN-2016-——-用FM的隐向量完成Embedding初始化"><a href="#🎃-FNN-2016-——-用FM的隐向量完成Embedding初始化" class="headerlink" title="🎃. FNN (2016) —— 用FM的隐向量完成Embedding初始化"></a>🎃. FNN (2016) —— 用FM的隐向量完成Embedding初始化</h4><p>FNN相比Deep Crossing的创新在于<strong>使用FM的隐层向量作为user和item的Embedding</strong>，从而避免了完全从随机状态训练Embedding。由于id类特征大量采用one-hot的编码方式，导致其维度极大，向量极稀疏，所以Embedding层与输入层的连接极多，梯度下降的效率很低，这大大增加了模型的训练时间和Embedding的不稳定性，使用pre train的方法完成Embedding层的训练，无疑是降低深度学习模型复杂度和训练不稳定性的有效工程经验。</p>
+<p><img src="/images/ctr/12.jpg" alt="img"></p>
+<p>论文📃：<a href="https://link.zhihu.com/?target=https%3A//github.com/wzhe06/Reco-papers/blob/master/Deep%20Learning%20Recommender%20System/%5BFNN%5D%20Deep%20Learning%20over%20Multi-field%20Categorical%20Data%20%28UCL%202016%29.pdf" target="_blank" rel="noopener">[FNN] Deep Learning over Multi-field Categorical Data (UCL 2016)</a></p>
+<h4 id="🎃-PNN-2016-——-丰富特征交叉的方式"><a href="#🎃-PNN-2016-——-丰富特征交叉的方式" class="headerlink" title="🎃. PNN (2016) —— 丰富特征交叉的方式"></a>🎃. PNN (2016) —— 丰富特征交叉的方式</h4><p>PNN的全称是Product-based Neural Network，<strong>PNN的关键在于在embedding层和全连接层之间加入了Product layer</strong>。传统的DNN是直接通过多层全连接层完成特征的交叉和组合的，但这样的方式缺乏一定的“针对性”。首先全连接层并没有针对不同特征域之间进行交叉；其次，全连接层的操作也并不是直接针对特征交叉设计的。但在实际问题中，特征交叉的重要性不言而喻，比如年龄与性别的交叉是非常重要的分组特征，包含了大量高价值的信息，我们急需深度学习网络能够有针对性的结构能够表征这些信息。因此PNN通过加入Product layer完成了针对性的特征交叉，其product操作在不同特征域之间进行特征组合。并定义了inner product，outer product等多种product的操作捕捉不同的交叉信息，增强模型表征不同数据模式的能力 。</p>
+<p><img src="/images/ctr/13.jpg" alt="img"></p>
+<p>论文📃：<a href="https://link.zhihu.com/?target=https%3A//github.com/wzhe06/Reco-papers/blob/master/Deep%20Learning%20Recommender%20System/%5BPNN%5D%20Product-based%20Neural%20Networks%20for%20User%20Response%20Prediction%20%28SJTU%202016%29.pdf" target="_blank" rel="noopener">[PNN] Product-based Neural Networks for User Response Prediction (SJTU 2016)</a></p>
+<h4 id="🎃-⭐Wide-amp-Deep-2016-——-记忆能力和泛化能力的综合权衡"><a href="#🎃-⭐Wide-amp-Deep-2016-——-记忆能力和泛化能力的综合权衡" class="headerlink" title="🎃. ⭐Wide&amp;Deep (2016) —— 记忆能力和泛化能力的综合权衡"></a>🎃. ⭐Wide&amp;Deep (2016) —— 记忆能力和泛化能力的综合权衡</h4><p>Google Wide&amp;Deep模型的主要思路正如其名，<strong>把单输入层的Wide部分和经过多层感知机的Deep部分连接起来，一起输入最终的输出层</strong>。其中Wide部分的主要作用是让模型具有记忆性（Memorization），单层的Wide部分善于处理大量稀疏的id类特征，便于让模型直接“记住”用户的大量历史信息。采用的方法是：通过一系列<strong>人工的特征叉乘</strong>来构造非线性特征，捕捉稀疏特征之间的高阶相关性；Deep部分的主要作用是让模型具有“泛化性”（Generalization），利用DNN表达能力强的特点，挖掘藏在特征后面的数据模式。最终利用LR输出层将Wide部分和Deep部分组合起来，形成统一的模型。Wide&amp;Deep对之后模型的影响在于：大量深度学习模型采用了两部分甚至多部分组合的形式，利用不同网络结构挖掘不同的信息后进行组合，充分利用和结合了不同网络结构的特点。</p>
+<ul>
+<li>Memorization (Wide) 根据历史行为数据，产生的推荐通常是和用户已有行为的物品直接相关的物品。</li>
+<li>Generalization (Deep) 会学习新的特征组合，提高推荐物品的多样性。</li>
+</ul>
+<p><img src="/images/ctr/14.jpg" alt="img"></p>
+<p>论文📃：<a href="https://link.zhihu.com/?target=https%3A//github.com/wzhe06/Reco-papers/blob/master/Deep%20Learning%20Recommender%20System/%5BWide%26Deep%5D%20Wide%20%26%20Deep%20Learning%20for%20Recommender%20Systems%20%28Google%202016%29.pdf" target="_blank" rel="noopener">[Wide&amp;Deep] Wide &amp; Deep Learning for Recommender Systems (Google 2016)</a></p>
+<h4 id="🎃-DeepFM-2017-——-用FM代替Wide部分"><a href="#🎃-DeepFM-2017-——-用FM代替Wide部分" class="headerlink" title="🎃. DeepFM (2017) —— 用FM代替Wide部分"></a>🎃. DeepFM (2017) —— 用FM代替Wide部分</h4><p>在Wide&amp;Deep之后，诸多模型延续了双网络组合的结构，DeepFM就是其中之一。DeepFM对Wide&amp;Deep的改进之处在于，它<strong>用FM替换掉了原来的Wide部分</strong>，加强了浅层网络部分特征组合的能力。事实上，由于FM本身就是由一阶部分和二阶部分组成的，DeepFM相当于同时组合了原Wide部分+二阶特征交叉部分+Deep部分三种结构，无疑进一步增强了模型的表达能力。 </p>
+<ul>
+<li>将wide部分用FM Layer 替换，代替人工设计特征，自动构造二阶特征叉乘，FM与Deep部分共享Embedding。</li>
+</ul>
+<p><img src="/images/ctr/15.jpg" alt="img"></p>
+<p>论文📃：<a href="https://link.zhihu.com/?target=https%3A//github.com/wzhe06/Reco-papers/blob/master/Deep%20Learning%20Recommender%20System/%5BDeepFM%5D%20A%20Factorization-Machine%20based%20Neural%20Network%20for%20CTR%20Prediction%20%28HIT-Huawei%202017%29.pdf" target="_blank" rel="noopener">[DeepFM] A Factorization-Machine based Neural Network for CTR Prediction (HIT-Huawei 2017)</a> </p>
+<h4 id="🎃-Deep-amp-Cross-2017-——-使用Cross网络代替Wide部分（如何自动构造高阶交叉特征）"><a href="#🎃-Deep-amp-Cross-2017-——-使用Cross网络代替Wide部分（如何自动构造高阶交叉特征）" class="headerlink" title="🎃. Deep&amp;Cross (2017) —— 使用Cross网络代替Wide部分（如何自动构造高阶交叉特征）"></a>🎃. Deep&amp;Cross (2017) —— 使用Cross网络代替Wide部分（如何自动构造高阶交叉特征）</h4><p>Google 2017年发表的 Deep&amp;Cross Network（DCN）同样是对Wide&amp;Deep的进一步改进，主要的思路<strong>使用Cross网络替代了原来的Wide部分</strong>，自动构造有限高阶的交叉特征。其中设计Cross网络的基本动机是为了增加特征之间的交互力度，使用多层cross layer对输入向量进行特征交叉。单层cross layer的基本操作是将cross layer的输入向量 <script type="math/tex">x_L</script> 与原始的输入向量 <script type="math/tex">x_0</script> 进行交叉，并加入bias向量和原始 <script type="math/tex">x_L</script> 输入向量。DCN本质上还是对Wide&amp;Deep Wide部分表达能力不足的问题进行改进，与DeepFM的思路非常类似。</p>
+<p><img src="/images/ctr/16.jpg" alt="img"></p>
+<p>Cross Layer: <script type="math/tex">x_{L+1} = x_0·{x_L}^T·w + b + x_L</script></p>
+<p><a href="https://zhuanlan.zhihu.com/p/55234968" target="_blank" rel="noopener">举例说明cross的作用</a>：</p>
+<p>令 <script type="math/tex">x_0 = \left[ \begin{matrix} x_{0,1} \\ x_{0,2} \end{matrix} \right]</script>，为便于讨论令各层 <script type="math/tex">b_i = 0</script>，则有：</p>
+<script type="math/tex; mode=display">x_1 = x_0x_0^Tw_0+x_0 = \left[ \begin{matrix} x_{0,1} \\ x_{0,2} \end{matrix} \right]\left[ \begin{matrix} x_{0,1} \ x_{0,2} \end{matrix} \right]\left[ \begin{matrix} w_{0,1} \\ w_{0,2} \end{matrix} \right] + \left[ \begin{matrix} x_{0,1} \\ x_{0,2} \end{matrix} \right] = \left[ \begin{matrix} w_{0,1}x_{0,1}^2+w_{0,2}x_{0,1}x_{0,2}+x_{0,1} \\ w_{0,1}x_{0,2}x_{0,1}+w_{0,2}x_{0,2}^2+x_{0,2} \end{matrix} \right]</script><script type="math/tex; mode=display">\begin{align}x_2 & = x_0x_1^Tw_1+x_1 \\& =  \left[ \begin{matrix} w_{1,1}x_{1,1}^2+w_{1,2}x_{1,1}x_{1,2}+x_{1,1} \\ w_{1,1}x_{1,2}x_{1,1}+w_{1,2}x_{1,2}^2+x_{1,2} \end{matrix} \right] \\ &= \left[ \begin{matrix} w_{0,1}w_{1,1}x_{0,1}^3 & + (w_{0,2}w_{1,1}+w_{0,1}w_{1,2})x_{0,1}^2x_{0,2} + w_{0,2}w_{1,2}x_{0,1}x_{0,2}^2 \\ &+ (w_{0,1}+w_{1,1})x_{0,1}^2+(w_{0,2}+w_{1,2})x_{0,1}x_{0,2}+x_{0,1}\\ ...... \end{matrix} \right]\end{align}</script><p>最后得到 <script type="math/tex">y_{cross} = x_2^T*w_{cross}</script> 参与到最后的loss计算。可以看到 <script type="math/tex">x_1</script> 包含了原始特征 <script type="math/tex">x_{0,1}</script> 和 <script type="math/tex">x_{0,2}</script> 从一阶到二阶的所有可能叉乘组合，而 <script type="math/tex">x_2</script> 包含了其从一阶到三阶的所有可能叉乘组合。 </p>
+<ul>
+<li><strong>有限高阶</strong>：叉乘<strong>阶数由网络深度决定</strong>，深度 <script type="math/tex">L_c</script> 对应最高 <script type="math/tex">L_c + 1</script> 阶的叉乘</li>
+<li><strong>自动叉乘</strong>：Cross输出包含了原始特征从一阶（即本身）到  <script type="math/tex">L_c + 1</script>  阶的<strong>所有叉乘组合，</strong>而模型参数量仅仅随输入维度成<strong>线性增长</strong>：  <script type="math/tex">2*d*L_c</script> </li>
+<li><strong>参数共享</strong>：不同叉乘项对应的权重不同，但并非每个叉乘组合对应独立的权重（指数数量级）， 通过参数共享，Cross有效<strong>降低了参数量</strong>。此外，参数共享还使得模型有更强的<strong>泛化性</strong>和<strong>鲁棒性</strong>。例如，如果独立训练权重，当训练集中 <script type="math/tex">x_i \neq 0  \bigwedge x_j \neq 0</script> 这个叉乘特征没有出现 ，对应权重肯定是零，而参数共享则不会，类似地，数据集中的一些噪声可以由大部分正常样本来纠正权重参数的学习。</li>
+</ul>
+<p>论文📃：<a href="https://link.zhihu.com/?target=https%3A//github.com/wzhe06/Reco-papers/blob/master/Deep%20Learning%20Recommender%20System/%5BDCN%5D%20Deep%20%26%20Cross%20Network%20for%20Ad%20Click%20Predictions%20%28Stanford%202017%29.pdf" target="_blank" rel="noopener">[DCN] Deep &amp; Cross Network for Ad Click Predictions (Stanford 2017)</a></p>
+<h4 id="🎃-NFM-2017-——-对Deep部分的改进"><a href="#🎃-NFM-2017-——-对Deep部分的改进" class="headerlink" title="🎃. NFM (2017) —— 对Deep部分的改进"></a>🎃. NFM (2017) —— 对Deep部分的改进</h4><p>相对于DeepFM和DCN对于Wide&amp;Deep Wide部分的改进，<strong>NFM可以看作是对Deep部分的改进</strong>。NFM的全称是Neural Factorization Machines，如果我们从深度学习网络架构的角度看待FM，FM也可以看作是由单层LR与二阶特征交叉组成的Wide&amp;Deep的架构，与经典W&amp;D的不同之处仅在于Deep部分变成了二阶隐向量相乘的形式。再进一步，NFM从修改FM二阶部分的角度出发，用一个带Bi-interaction Pooling层的DNN替换了FM的特征交叉部分，形成了独特的Wide&amp;Deep架构。其中Bi-interaction Pooling可以看作是不同特征embedding的element-wise product的形式。这也是NFM相比Google Wide&amp;Deep的创新之处。 </p>
+<p><img src="/images/ctr/17.jpg" alt="img"></p>
+<p> 论文📃：<a href="https://link.zhihu.com/?target=https%3A//github.com/wzhe06/Reco-papers/blob/master/Deep%20Learning%20Recommender%20System/%5BNFM%5D%20Neural%20Factorization%20Machines%20for%20Sparse%20Predictive%20Analytics%20%28NUS%202017%29.pdf" target="_blank" rel="noopener">[NFM] Neural Factorization Machines for Sparse Predictive Analytics (NUS 2017)</a> </p>
+<h4 id="🎃-AFM-2017-——-引入Attention机制的FM"><a href="#🎃-AFM-2017-——-引入Attention机制的FM" class="headerlink" title="🎃. AFM (2017) —— 引入Attention机制的FM"></a>🎃. AFM (2017) —— 引入Attention机制的FM</h4><p>AFM的全称是Attentional Factorization Machines，通过前面的介绍我们很清楚的知道，FM其实就是经典的Wide&amp;Deep结构，其中Wide部分是FM的一阶部分，Deep部分是FM的二阶部分，而<strong>AFM顾名思义，就是引入Attention机制的FM</strong>，具体到模型结构上，AFM其实是对FM的二阶部分的每个交叉特征赋予了权重，这个权重控制了交叉特征对最后结果的影响，也就非常类似于NLP领域的注意力机制（Attention Mechanism）。为了训练Attention权重，AFM加入了Attention Net，利用Attention Net训练好Attention权重后，再反向作用于FM二阶交叉特征之上，使FM获得根据样本特点调整特征权重的能力。 </p>
+<p><img src="/images/ctr/18.jpg" alt="img"></p>
+<p> 论文📃： <a href="https://link.zhihu.com/?target=https%3A//github.com/wzhe06/Reco-papers/blob/master/Deep%20Learning%20Recommender%20System/%5BAFM%5D%20Attentional%20Factorization%20Machines%20-%20Learning%20the%20Weight%20of%20Feature%20Interactions%20via%20Attention%20Networks%20%28ZJU%202017%29.pdf" target="_blank" rel="noopener">[AFM] Attentional Factorization Machines - Learning the Weight of Feature Interactions via Attention Networks (ZJU 2017)</a> </p>
+<h4 id="🎃-DIN-2017-——-阿里加入Attention机制的深度学习网络"><a href="#🎃-DIN-2017-——-阿里加入Attention机制的深度学习网络" class="headerlink" title="🎃. DIN (2017) —— 阿里加入Attention机制的深度学习网络"></a>🎃. DIN (2017) —— 阿里加入Attention机制的深度学习网络</h4><p>AFM在FM中加入了Attention机制，2018年，阿里巴巴正式提出了融合了Attention机制的深度学习模型——Deep Interest Network。与AFM将Attention与FM结合不同的是，<strong>DIN将Attention机制作用于深度神经网络</strong>，在模型的embedding layer和concatenate layer之间加入了attention unit，使模型能够根据候选商品的不同，调整不同特征的权重。</p>
+<p><img src="/images/ctr/19.jpg" alt="img"></p>
+<p>论文📃：<a href="https://link.zhihu.com/?target=https%3A//github.com/wzhe06/Reco-papers/blob/master/Deep%20Learning%20Recommender%20System/%5BDIN%5D%20Deep%20Interest%20Network%20for%20Click-Through%20Rate%20Prediction%20%28Alibaba%202018%29.pdf" target="_blank" rel="noopener">[DIN] Deep Interest Network for Click-Through Rate Pre</a></p>
+<h4 id="🎃-DIEN-2018-——-DIN的“进化”"><a href="#🎃-DIEN-2018-——-DIN的“进化”" class="headerlink" title="🎃. DIEN (2018) —— DIN的“进化”"></a>🎃. DIEN (2018) —— DIN的“进化”</h4><p>DIEN的全称为Deep Interest Evolution Network，它不仅是对DIN的进一步“进化”，更重要的是<strong>DIEN通过引入序列模型 AUGRU模拟了用户兴趣进化的过程</strong>。具体来讲模型的主要特点是在Embedding layer和Concatenate layer之间加入了生成兴趣的Interest Extractor Layer和模拟兴趣演化的Interest Evolving layer。其中Interest Extractor Layer使用了DIN的结构抽取了每一个时间片内用户的兴趣，Interest Evolving layer则利用序列模型AUGRU的结构将不同时间的用户兴趣串联起来，形成兴趣进化的链条。最终再把当前时刻的“兴趣向量”输入上层的多层全连接网络，与其他特征一起进行最终的CTR预估。</p>
+<p><img src="/images/ctr/20.jpg" alt="img"></p>
+<p>论文📃：<a href="https://link.zhihu.com/?target=https%3A//github.com/wzhe06/Reco-papers/blob/master/Deep%20Learning%20Recommender%20System/%5BDIEN%5D%20Deep%20Interest%20Evolution%20Network%20for%20Click-Through%20Rate%20Prediction%20%28Alibaba%202019%29.pdf" target="_blank" rel="noopener">[DIEN] Deep Interest Evolution Network for Click-Through Rate Prediction (Alibaba 2019)</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          
+          <div class="post-tags">
+              <a href="/tags/NLP/" rel="tag"><i class="fa fa-tag"></i> NLP</a>
+              <a href="/tags/深度学习/" rel="tag"><i class="fa fa-tag"></i> 深度学习</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+                <a href="/2019/10/30/SVM-µö»µîüσÉæΘçÅµ£║/" rel="next" title="SVM 支持向量机">
+                  <i class="fa fa-chevron-left"></i> SVM 支持向量机
+                </a>
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+                <a href="/2019/11/08/LayerNorm-Σ╕Ä-BatchNorm/" rel="prev" title="BatchNorm 与 LayerNorm">
+                  BatchNorm 与 LayerNorm <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#🎃-Deep-Crossing-2016-——-深度学习CTR模型的-base-model"><span class="nav-number">1.</span> <span class="nav-text">🎃. Deep Crossing (2016) —— 深度学习CTR模型的 base model</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#🎃-FNN-2016-——-用FM的隐向量完成Embedding初始化"><span class="nav-number">2.</span> <span class="nav-text">🎃. FNN (2016) —— 用FM的隐向量完成Embedding初始化</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#🎃-PNN-2016-——-丰富特征交叉的方式"><span class="nav-number">3.</span> <span class="nav-text">🎃. PNN (2016) —— 丰富特征交叉的方式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#🎃-⭐Wide-amp-Deep-2016-——-记忆能力和泛化能力的综合权衡"><span class="nav-number">4.</span> <span class="nav-text">🎃. ⭐Wide&amp;Deep (2016) —— 记忆能力和泛化能力的综合权衡</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#🎃-DeepFM-2017-——-用FM代替Wide部分"><span class="nav-number">5.</span> <span class="nav-text">🎃. DeepFM (2017) —— 用FM代替Wide部分</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#🎃-Deep-amp-Cross-2017-——-使用Cross网络代替Wide部分（如何自动构造高阶交叉特征）"><span class="nav-number">6.</span> <span class="nav-text">🎃. Deep&amp;Cross (2017) —— 使用Cross网络代替Wide部分（如何自动构造高阶交叉特征）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#🎃-NFM-2017-——-对Deep部分的改进"><span class="nav-number">7.</span> <span class="nav-text">🎃. NFM (2017) —— 对Deep部分的改进</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#🎃-AFM-2017-——-引入Attention机制的FM"><span class="nav-number">8.</span> <span class="nav-text">🎃. AFM (2017) —— 引入Attention机制的FM</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#🎃-DIN-2017-——-阿里加入Attention机制的深度学习网络"><span class="nav-number">9.</span> <span class="nav-text">🎃. DIN (2017) —— 阿里加入Attention机制的深度学习网络</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#🎃-DIEN-2018-——-DIN的“进化”"><span class="nav-number">10.</span> <span class="nav-text">🎃. DIEN (2018) —— DIN的“进化”</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Alyssa"
+      src="/images/toux.jpg">
+  <p class="site-author-name" itemprop="name">Alyssa</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">27</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/alyssaasa" title="GitHub → https://github.com/alyssaasa" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://weibo.com/Alyssaasa" title="Weibo → https://weibo.com/Alyssaasa" rel="noopener" target="_blank"><i class="fa fa-fw fa-weibo"></i>Weibo</a>
+      </span>
+  </div>
+
+
+<script type="text/javascript">
+     var alltags = document.getElementsByClassName('tag-cloud-tags');
+     var tags = alltags[0].getElementsByTagName('a');
+     for (var i = tags.length - 1; i >= 0; i--) {
+       var r=Math.floor(Math.random()*75+130);
+       var g=Math.floor(Math.random()*75+100);
+       var b=Math.floor(Math.random()*75+80);
+       tags[i].style.background = "rgb("+r+","+g+","+b+")";
+     }
+</script>
+
+<style>
+  .tag-cloud-tags{
+    /*font-family: Helvetica, Tahoma, Arial;*/
+    /*font-weight: 100;*/
+    text-align: center;
+    counter-reset: tags;
+  }
+  .tag-cloud-tags a{
+    border-radius: 6px;
+    padding-right: 5px;
+    padding-left: 5px;
+    margin: 8px 5px 10px 3px;
+  }
+  .tag-cloud-tags a:before{
+    content: "🔖";
+  }
+
+  .tag-cloud-tags a:hover{
+     box-shadow: 0px 5px 15px 0px rgba(0,0,0,.4);
+     transform: scale(1.1);
+     /*box-shadow: 10px 10px 15px 2px rgba(0,0,0,.12), 0 0 6px 0 rgba(104, 104, 105, 0.1);*/
+     transition-duration: 0.15s;
+  }
+
+</style>
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2019 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Alyssa</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/pisces.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+  <script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+<script type="text/x-mathjax-config">
+
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ['\\(', '\\)'] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+      equationNumbers: {
+        autoNumber: 'AMS'
+      }
+    }
+  });
+
+  MathJax.Hub.Register.StartupHook('TeX Jax Ready', function() {
+    MathJax.InputJax.TeX.prefilterHooks.Add(function(data) {
+      if (data.display) {
+        var next = data.script.nextSibling;
+        while (next && next.nodeName.toLowerCase() === '#text') {
+          next = next.nextSibling;
+        }
+        if (next && next.nodeName.toLowerCase() === 'br') {
+          next.parentNode.removeChild(next);
+        }
+      }
+    });
+  });
+
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for (i = 0; i < all.length; i += 1) {
+      element = document.getElementById(all[i].inputID + '-Frame').parentNode;
+      if (element.nodeName.toLowerCase() == 'li') {
+        element = element.parentNode;
+      }
+      element.classList.add('has-jax');
+    }
+  });
+</script>
+<script>
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_HTMLorMML', () => {
+    MathJax.Hub.Typeset();
+  }, window.MathJax);
+</script>
+
+    
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID: 'a0b09f47cc93396b2dd6',
+      clientSecret: 'bdf8c7211c890d37071003e98dd9879483be6512',
+      repo: 'alyssaasa.github.io',
+      owner: 'alyssaasa',
+      admin: ['alyssaasa'],
+      id: '8b3d71555cf3de5ef8b8360d7aa2316f',
+        language: 'zh-CN',
+      distractionFreeMode: 'true'
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+</script>
+
+</body>
+</html>

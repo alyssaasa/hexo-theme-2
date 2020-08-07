@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/2.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/1.png">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '7.5.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":true,"scrollpercent":true},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":true,"trigger":"auto","top_n_per_article":10,"unescape":false,"preload":false},
+    path: './public/search.xml',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: '复制',
+      copy_success: '复制成功',
+      copy_failure: '复制失败'
+    },
+    sidebarPadding: 40
+  };
+</script>
+
+  <meta name="description" content="非常简单但很重要的问题">
+<meta name="keywords" content="算法,leetcode">
+<meta property="og:type" content="article">
+<meta property="og:title" content="数组">
+<meta property="og:url" content="http://yoursite.com/2019/08/21/µò░τ╗ä/index.html">
+<meta property="og:site_name" content="各有未来">
+<meta property="og:description" content="非常简单但很重要的问题">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-10-30T08:17:58.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="数组">
+<meta name="twitter:description" content="非常简单但很重要的问题">
+
+<link rel="canonical" href="http://yoursite.com/2019/08/21/µò░τ╗ä/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>数组 | 各有未来</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">各有未来</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="none"
+           placeholder="搜索..." spellcheck="false"
+           type="text" id="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/08/21/µò░τ╗ä/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/toux.jpg">
+      <meta itemprop="name" content="Alyssa">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="各有未来">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          数组
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-08-21 21:30:11" itemprop="dateCreated datePublished" datetime="2019-08-21T21:30:11+08:00">2019-08-21</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2019-10-30 16:17:58" itemprop="dateModified" datetime="2019-10-30T16:17:58+08:00">2019-10-30</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/算法/" itemprop="url" rel="index">
+                    <span itemprop="name">算法</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>非常简单但很重要的问题</p>
+<a id="more"></a>
+<h4 id="🌈-数组的全排列"><a href="#🌈-数组的全排列" class="headerlink" title="🌈. 数组的全排列"></a>🌈. 数组的全排列</h4><h5 id="1-leetcode-31-给出全排列的下一个排列"><a href="#1-leetcode-31-给出全排列的下一个排列" class="headerlink" title="1. leetcode 31. 给出全排列的下一个排列"></a>1. <a href="https://leetcode.com/problems/next-permutation/" target="_blank" rel="noopener">leetcode 31. 给出全排列的下一个排列</a></h5><ul>
+<li>输入1: <code>1,2,3,4,3,8,7,6,5</code> → <code>1,2,3,4,5,3,6,7,8</code></li>
+<li>输入2: <code>3,2,1</code> → <code>1,2,3</code></li>
+<li>条件：在nums数组上就地转换，并且要使用常数级辅助空间</li>
+<li><strong>从后向前，找到递减的位置，然后从后面找到比他大的第一个元素，交换，然后对后面从小到大排序即可</strong></li>
+<li>如果当前已经是最大，那么就输出他的最小值  从小到大排序即可</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">swap</span><span class="params">(<span class="keyword">int</span>[] nums, <span class="keyword">int</span> i, <span class="keyword">int</span> j)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> tmp = nums[i];</span><br><span class="line">    nums[i] = nums[j];</span><br><span class="line">    nums[j] = tmp;</span><br><span class="line">&#125;</span><br><span class="line">    </span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">reverse</span><span class="params">(<span class="keyword">int</span>[] nums, <span class="keyword">int</span> begin)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> end = nums.length-<span class="number">1</span>;</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;(end-begin+<span class="number">1</span>)/<span class="number">2</span>;i++)</span><br><span class="line">        swap(nums, begin+i, end-i);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">nextPermutation</span><span class="params">(<span class="keyword">int</span>[] nums)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">boolean</span> flag = <span class="keyword">true</span>;</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=nums.length-<span class="number">1</span>;i&gt;<span class="number">0</span>;i--) &#123;</span><br><span class="line">        <span class="keyword">if</span>(nums[i]&lt;=nums[i-<span class="number">1</span>])</span><br><span class="line">            <span class="keyword">continue</span>;</span><br><span class="line">        <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">//nums[i-1]是递减的那个值</span></span><br><span class="line">            <span class="keyword">for</span>(<span class="keyword">int</span> j=nums.length-<span class="number">1</span>;j&gt;=<span class="number">0</span>;j--) &#123;</span><br><span class="line">                <span class="keyword">if</span>(nums[j]&gt;nums[i-<span class="number">1</span>]) &#123;</span><br><span class="line">                    swap(nums, i-<span class="number">1</span>, j);</span><br><span class="line">                    flag = <span class="keyword">false</span>;</span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">//对后面逆序</span></span><br><span class="line">            reverse(nums, i);</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">       &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span>(flag)</span><br><span class="line">        Arrays.sort(nums);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="2-leetcode-46-无重复数字数组的全排列"><a href="#2-leetcode-46-无重复数字数组的全排列" class="headerlink" title="2. leetcode 46. 无重复数字数组的全排列"></a>2. <a href="https://leetcode.com/problems/permutations/" target="_blank" rel="noopener">leetcode 46. 无重复数字数组的全排列</a></h5><ul>
+<li>输入：[1,2,3]</li>
+<li>输出：[1,2,3]   [1,3,2]  [2,1,3]  [2,3,1]  [3,1,2]  [3,2,1]</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">get_permute</span><span class="params">(<span class="keyword">int</span>[] nums, <span class="keyword">int</span>[] visit, List&lt;List&lt;Integer&gt;&gt; result, List&lt;Integer&gt; tmp_res)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(tmp_res.size()==nums.length) &#123;</span><br><span class="line">        List&lt;Integer&gt; tmp = <span class="keyword">new</span> ArrayList();</span><br><span class="line">        tmp.addAll(tmp_res);</span><br><span class="line">        result.add(tmp);</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;nums.length;i++) &#123;</span><br><span class="line">        <span class="keyword">if</span>(visit[i]==<span class="number">0</span>) &#123;</span><br><span class="line">            tmp_res.add(nums[i]);</span><br><span class="line">            visit[i] = <span class="number">1</span>;</span><br><span class="line">            get_permute(nums, visit, result, tmp_res);</span><br><span class="line">            tmp_res.remove(tmp_res.size()-<span class="number">1</span>);</span><br><span class="line">            visit[i] = <span class="number">0</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> List&lt;List&lt;Integer&gt;&gt; permute(<span class="keyword">int</span>[] nums) &#123;</span><br><span class="line">    <span class="keyword">int</span>[] visit = <span class="keyword">new</span> <span class="keyword">int</span>[nums.length];</span><br><span class="line">    List&lt;List&lt;Integer&gt;&gt; result = <span class="keyword">new</span> ArrayList();</span><br><span class="line">    List&lt;Integer&gt; tmp_res = <span class="keyword">new</span> ArrayList();</span><br><span class="line">    get_permute(nums, visit, result, tmp_res);</span><br><span class="line">    <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="3-leetcode-47-有重复数字的全排列"><a href="#3-leetcode-47-有重复数字的全排列" class="headerlink" title="3. leetcode 47. 有重复数字的全排列"></a>3. <a href="https://leetcode.com/problems/permutations-ii/" target="_blank" rel="noopener">leetcode 47. 有重复数字的全排列</a></h5><ul>
+<li>输入：[1,2,1]</li>
+<li>输出：[1,1,2]  [1,2,1]  [2,1,1]</li>
+<li>有重复数字时，可以使用set代替之前的list,因为set本身就有过滤重复的用途。</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">get_permute</span><span class="params">(<span class="keyword">int</span>[] nums, <span class="keyword">int</span>[] visit, Set&lt;List&lt;Integer&gt;&gt; result, List&lt;Integer&gt; tmp_res)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(tmp_res.size()==nums.length) &#123;</span><br><span class="line">     List&lt;Integer&gt; tmp = <span class="keyword">new</span> ArrayList();</span><br><span class="line">        tmp.addAll(tmp_res);</span><br><span class="line">        result.add(tmp);</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;nums.length;i++) &#123;</span><br><span class="line">        <span class="keyword">if</span>(visit[i]==<span class="number">0</span>) &#123;</span><br><span class="line">            tmp_res.add(nums[i]);</span><br><span class="line">            visit[i] = <span class="number">1</span>;</span><br><span class="line">            get_permute(nums, visit, result, tmp_res);</span><br><span class="line">            tmp_res.remove(tmp_res.size()-<span class="number">1</span>);</span><br><span class="line">            visit[i] = <span class="number">0</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">public</span> List&lt;List&lt;Integer&gt;&gt; permuteUnique(<span class="keyword">int</span>[] nums) &#123;</span><br><span class="line">    List&lt;Integer&gt; list = <span class="keyword">new</span> ArrayList();</span><br><span class="line">    Set&lt;List&lt;Integer&gt;&gt; res = <span class="keyword">new</span> HashSet();</span><br><span class="line">	<span class="keyword">int</span>[] visit = <span class="keyword">new</span> <span class="keyword">int</span>[nums.length];</span><br><span class="line">    </span><br><span class="line">    Arrays.sort(nums);</span><br><span class="line">    get_permute(nums, visit, res, list);</span><br><span class="line"></span><br><span class="line">    List&lt;List&lt;Integer&gt;&gt; result = <span class="keyword">new</span> ArrayList();</span><br><span class="line">    <span class="keyword">for</span>(List&lt;Integer&gt; list1:res)</span><br><span class="line">        result.add(list1);</span><br><span class="line">    <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>但是这种做法会比较复杂，不管相同不相同的数字，都会进行一次全排列，会比较耗时，所以可以先将数组排序，将相同的放在一起，如果取出下一个元素和上一个相同，那么这一轮就可以不再进行全排列了。</li>
+</ul>
+<h5 id="4-leetcode-60-取特定位置的全排列字符串"><a href="#4-leetcode-60-取特定位置的全排列字符串" class="headerlink" title="4. leetcode 60. 取特定位置的全排列字符串"></a>4. <a href="https://leetcode.com/problems/permutation-sequence/" target="_blank" rel="noopener">leetcode 60. 取特定位置的全排列字符串</a></h5><ul>
+<li>n=3, 则全排列为：<code>&quot;123&quot;</code> <code>&quot;132&quot;</code> <code>&quot;213&quot;</code> <code>&quot;231&quot;</code> <code>&quot;312&quot;</code> <code>&quot;321&quot;</code>，若k=3, 则输出为：<code>&quot;213&quot;</code></li>
+<li>n=4, k=9, 则输出为：<code>&quot;2314&quot;</code></li>
+<li>第一个位置有n中情况，第二个位置n-1中情况，…对于给定的n，其全排列中n!中情况。</li>
+<li>求第一个位置的值时：k/(n-1)!  = shang…yu, 若yu&gt;0, 则拿到shang位置的值。其他同理</li>
+<li>4 13     13/6 = 2…1    3</li>
+<li>7/2! = 7/2 = 3…1   </li>
+</ul>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h5 id="5-给定第k个全排列，求倒数第k个全排列"><a href="#5-给定第k个全排列，求倒数第k个全排列" class="headerlink" title="5. 给定第k个全排列，求倒数第k个全排列"></a>5. 给定第k个全排列，求倒数第k个全排列</h5><ul>
+<li>n=3, 则全排列为：<code>&quot;123&quot;</code> <code>&quot;132&quot;</code> <code>&quot;213&quot;</code> <code>&quot;231&quot;</code> <code>&quot;312&quot;</code> <code>&quot;321&quot;</code></li>
+<li>给定k=3, 第3个全排列为 <code>&quot;213&quot;</code> ，则输出为：<code>&quot;231&quot;</code></li>
+<li>这道题比较有规律，倒数第k个全排列，就是n+1减去正数第k个全排列每个位置上面的值。</li>
+<li>例：k=2, n=3：正数：<code>&quot;132&quot;</code>；倒数：(n+1-1)(n+1-3)(n+1-2)=<code>&quot;312&quot;</code> </li>
+</ul>
+<h4 id="🌈-输出所有和为target的数组"><a href="#🌈-输出所有和为target的数组" class="headerlink" title="🌈. 输出所有和为target的数组"></a>🌈. 输出所有和为target的数组</h4><h5 id="1-先来一个类似的简单题：leetcode-633-判断一个值可否由两个数的平方和组成"><a href="#1-先来一个类似的简单题：leetcode-633-判断一个值可否由两个数的平方和组成" class="headerlink" title="1. 先来一个类似的简单题：leetcode 633. 判断一个值可否由两个数的平方和组成"></a>1. 先来一个类似的简单题：<a href="https://leetcode.com/problems/sum-of-square-numbers/" target="_blank" rel="noopener">leetcode 633. 判断一个值可否由两个数的平方和组成</a></h5><figure class="highlight java"><table><tr><td class="code"><pre><span class="line">whether there<span class="string">'re two integers a and b such that a^2 + b^2 = c.</span></span><br><span class="line"><span class="string">例如：输入5，返回true， 因为 1 * 1 + 2 * 2 = 5。</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>解法：设置两个变量，i=0, j= $\sqrt5$ 的向下取整， 若$i<em>i+j</em>j<c$, 则增大i，否则减小j，直到i>j或找到满足条件的值为止。</c$,></li>
+</ul>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">judgeSquareSum</span><span class="params">(<span class="keyword">int</span> c)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> i = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">int</span> j = (<span class="keyword">int</span>)Math.sqrt(c);</span><br><span class="line">    <span class="keyword">while</span>(i&lt;=j) &#123;</span><br><span class="line">        <span class="keyword">int</span> value = i*i+j*j;</span><br><span class="line">        <span class="keyword">if</span>(value==c) <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">        <span class="keyword">if</span>(value&gt;c) j -= <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">if</span>(value&lt;c) i += <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="2-leetcode-15-threesum-输出所有和为0的数组"><a href="#2-leetcode-15-threesum-输出所有和为0的数组" class="headerlink" title="2. leetcode 15. threesum, 输出所有和为0的数组"></a>2. <a href="https://leetcode.com/problems/3sum/" target="_blank" rel="noopener">leetcode 15. threesum, 输出所有和为0的数组</a></h5><ul>
+<li>先将数组进行排序。</li>
+<li><p>设置两个指针，一个指向数组头，一个指向数组尾，向中间移动。</p>
+</li>
+<li><p>如果指针指向的两数之和小于target，则我们将左边那个指针i右移一位，使得指向的数字增大一些。</p>
+</li>
+<li>同理，如果两数之和大于target，则我们将右边那个指针j左移一位，使得指向的数字减小一些。</li>
+<li>直到找到满足条件的两个值。</li>
+<li>因为该道题是三个数的和为target，所以需要先确定一个数，然后让new_target = target-当前值。</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> List&lt;List&lt;Integer&gt;&gt; threeSum(<span class="keyword">int</span>[] nums) &#123;</span><br><span class="line">    Set&lt;List&lt;Integer&gt;&gt; res = <span class="keyword">new</span> HashSet&lt;&gt;();</span><br><span class="line">    Arrays.sort(nums);</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">1</span>;i&lt;nums.length;i++) &#123;</span><br><span class="line">        <span class="keyword">int</span> left = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">int</span> right = nums.length-<span class="number">1</span>;</span><br><span class="line">        <span class="keyword">int</span> target = <span class="number">0</span>-nums[i];</span><br><span class="line">        <span class="keyword">while</span>(left&lt;right &amp;&amp; left!=i &amp;&amp; right!=i) &#123;</span><br><span class="line">            <span class="keyword">if</span>(nums[left]+nums[right]&gt;target)</span><br><span class="line">                right -= <span class="number">1</span>;</span><br><span class="line">            <span class="keyword">else</span> <span class="keyword">if</span>(nums[left]+nums[right]&lt;target)</span><br><span class="line">                left += <span class="number">1</span>;</span><br><span class="line">            <span class="keyword">else</span> &#123;</span><br><span class="line">                List&lt;Integer&gt; tmp_res = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">                tmp_res.add(nums[left]);</span><br><span class="line">                tmp_res.add(nums[i]);</span><br><span class="line">                tmp_res.add(nums[right]);</span><br><span class="line">                res.add(tmp_res);</span><br><span class="line">                right -= <span class="number">1</span>;</span><br><span class="line">                left += <span class="number">1</span>;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">     &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    List&lt;List&lt;Integer&gt;&gt; result = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">    Iterator&lt;List&lt;Integer&gt;&gt; iterator = res.iterator();</span><br><span class="line">    <span class="keyword">while</span>(iterator.hasNext())</span><br><span class="line">        result.add(iterator.next());</span><br><span class="line"></span><br><span class="line">   <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="3-leetcode-16-三个数的和最接近target"><a href="#3-leetcode-16-三个数的和最接近target" class="headerlink" title="3. leetcode 16. 三个数的和最接近target"></a>3. <a href="https://leetcode.com/problems/3sum-closest/" target="_blank" rel="noopener">leetcode 16. 三个数的和最接近target</a></h5><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">threeSumClosest</span><span class="params">(<span class="keyword">int</span>[] nums, <span class="keyword">int</span> target)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> res = Integer.MAX_VALUE;</span><br><span class="line">    Arrays.sort(nums);</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">1</span>;i&lt;nums.length-<span class="number">1</span>;i++) &#123;</span><br><span class="line">        <span class="keyword">int</span> left = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">int</span> right = nums.length-<span class="number">1</span>;</span><br><span class="line">        <span class="keyword">int</span> new_tar = target - nums[i];</span><br><span class="line">        <span class="keyword">while</span>(left&lt;right &amp;&amp; left!=i &amp;&amp; right!=i) &#123;</span><br><span class="line">            <span class="keyword">if</span>(nums[left]+nums[right]&gt;new_tar)</span><br><span class="line">                right -= <span class="number">1</span>;</span><br><span class="line">            <span class="keyword">else</span> <span class="keyword">if</span>(nums[left]+nums[right]&lt;new_tar)</span><br><span class="line">                left += <span class="number">1</span>;</span><br><span class="line">            <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="keyword">return</span> target;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        left = left==i? left-<span class="number">1</span>: left;</span><br><span class="line">        right = right==i ? right+<span class="number">1</span>:right;</span><br><span class="line">        <span class="keyword">int</span> tmp = nums[i] + nums[left] + nums[right];</span><br><span class="line">        res = Math.abs(target-tmp)&lt;Math.abs(target-res)?tmp:res;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> res;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="🌈-其他题目"><a href="#🌈-其他题目" class="headerlink" title="🌈. 其他题目"></a>🌈. 其他题目</h4><h5 id="1-leetcode-56-Merge-Intervals"><a href="#1-leetcode-56-Merge-Intervals" class="headerlink" title="1. leetcode 56. Merge Intervals"></a>1. <a href="https://leetcode.com/problems/merge-intervals/" target="_blank" rel="noopener">leetcode 56. Merge Intervals</a></h5><ul>
+<li>将数组有重叠的部分进行合并。</li>
+<li>先将数组按照第一个元素的位置排序，然后比较前一个的第二个值与后一个的第一个值</li>
+<li>如果前一个的第二个值大于后一个的第一个值，就进行合并，右边界取第一个和第二个右边界的大值</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">Input: [[<span class="number">1</span>,<span class="number">3</span>],[<span class="number">2</span>,<span class="number">6</span>],[<span class="number">8</span>,<span class="number">10</span>],[<span class="number">15</span>,<span class="number">18</span>]]</span><br><span class="line">Output: [[<span class="number">1</span>,<span class="number">6</span>],[<span class="number">8</span>,<span class="number">10</span>],[<span class="number">15</span>,<span class="number">18</span>]]</span><br><span class="line">Explanation: Since intervals [<span class="number">1</span>,<span class="number">3</span>] and [<span class="number">2</span>,<span class="number">6</span>] overlaps, merge them into [<span class="number">1</span>,<span class="number">6</span>].</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span>[][] merge(<span class="keyword">int</span>[][] intervals) &#123;</span><br><span class="line">    List&lt;<span class="keyword">int</span>[]&gt; list = <span class="keyword">new</span> ArrayList();</span><br><span class="line">    Arrays.sort(intervals, <span class="keyword">new</span> Comparator&lt;<span class="keyword">int</span>[]&gt;()&#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">compare</span><span class="params">(<span class="keyword">int</span>[] x, <span class="keyword">int</span>[] y)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> Integer.compare(x[<span class="number">0</span>], y[<span class="number">0</span>]);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">    <span class="keyword">int</span> start = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">while</span>(start&lt;intervals.length) &#123;</span><br><span class="line">        <span class="keyword">int</span>[] tmp = <span class="keyword">new</span> <span class="keyword">int</span>[<span class="number">2</span>];</span><br><span class="line">        tmp[<span class="number">0</span>] = intervals[start][<span class="number">0</span>];</span><br><span class="line">        <span class="keyword">int</span> cur_end = intervals[start][<span class="number">1</span>];</span><br><span class="line">        <span class="keyword">while</span>(start&lt;intervals.length-<span class="number">1</span> &amp;&amp; cur_end&gt;=intervals[start+<span class="number">1</span>][<span class="number">0</span>]) &#123;</span><br><span class="line">            cur_end = Math.max(cur_end, intervals[start+<span class="number">1</span>][<span class="number">1</span>]);</span><br><span class="line">            start += <span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        start += <span class="number">1</span>;</span><br><span class="line">        tmp[<span class="number">1</span>] = cur_end;</span><br><span class="line">        list.add(tmp);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> list.toArray(<span class="keyword">new</span> <span class="keyword">int</span>[list.size()][<span class="number">2</span>]);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          
+          <div class="post-tags">
+              <a href="/tags/算法/" rel="tag"><i class="fa fa-tag"></i> 算法</a>
+              <a href="/tags/leetcode/" rel="tag"><i class="fa fa-tag"></i> leetcode</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+                <a href="/2019/08/21/σ¢╛/" rel="next" title="图">
+                  <i class="fa fa-chevron-left"></i> 图
+                </a>
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+                <a href="/2019/08/28/µƒÑµë╛τ«ùµ│ò/" rel="prev" title="查找算法">
+                  查找算法 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#🌈-数组的全排列"><span class="nav-number">1.</span> <span class="nav-text">🌈. 数组的全排列</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#1-leetcode-31-给出全排列的下一个排列"><span class="nav-number">1.1.</span> <span class="nav-text">1. leetcode 31. 给出全排列的下一个排列</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-leetcode-46-无重复数字数组的全排列"><span class="nav-number">1.2.</span> <span class="nav-text">2. leetcode 46. 无重复数字数组的全排列</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3-leetcode-47-有重复数字的全排列"><span class="nav-number">1.3.</span> <span class="nav-text">3. leetcode 47. 有重复数字的全排列</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#4-leetcode-60-取特定位置的全排列字符串"><span class="nav-number">1.4.</span> <span class="nav-text">4. leetcode 60. 取特定位置的全排列字符串</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#5-给定第k个全排列，求倒数第k个全排列"><span class="nav-number">1.5.</span> <span class="nav-text">5. 给定第k个全排列，求倒数第k个全排列</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#🌈-输出所有和为target的数组"><span class="nav-number">2.</span> <span class="nav-text">🌈. 输出所有和为target的数组</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#1-先来一个类似的简单题：leetcode-633-判断一个值可否由两个数的平方和组成"><span class="nav-number">2.1.</span> <span class="nav-text">1. 先来一个类似的简单题：leetcode 633. 判断一个值可否由两个数的平方和组成</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-leetcode-15-threesum-输出所有和为0的数组"><span class="nav-number">2.2.</span> <span class="nav-text">2. leetcode 15. threesum, 输出所有和为0的数组</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3-leetcode-16-三个数的和最接近target"><span class="nav-number">2.3.</span> <span class="nav-text">3. leetcode 16. 三个数的和最接近target</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#🌈-其他题目"><span class="nav-number">3.</span> <span class="nav-text">🌈. 其他题目</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#1-leetcode-56-Merge-Intervals"><span class="nav-number">3.1.</span> <span class="nav-text">1. leetcode 56. Merge Intervals</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Alyssa"
+      src="/images/toux.jpg">
+  <p class="site-author-name" itemprop="name">Alyssa</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">27</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/alyssaasa" title="GitHub → https://github.com/alyssaasa" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://weibo.com/Alyssaasa" title="Weibo → https://weibo.com/Alyssaasa" rel="noopener" target="_blank"><i class="fa fa-fw fa-weibo"></i>Weibo</a>
+      </span>
+  </div>
+
+
+<script type="text/javascript">
+     var alltags = document.getElementsByClassName('tag-cloud-tags');
+     var tags = alltags[0].getElementsByTagName('a');
+     for (var i = tags.length - 1; i >= 0; i--) {
+       var r=Math.floor(Math.random()*75+130);
+       var g=Math.floor(Math.random()*75+100);
+       var b=Math.floor(Math.random()*75+80);
+       tags[i].style.background = "rgb("+r+","+g+","+b+")";
+     }
+</script>
+
+<style>
+  .tag-cloud-tags{
+    /*font-family: Helvetica, Tahoma, Arial;*/
+    /*font-weight: 100;*/
+    text-align: center;
+    counter-reset: tags;
+  }
+  .tag-cloud-tags a{
+    border-radius: 6px;
+    padding-right: 5px;
+    padding-left: 5px;
+    margin: 8px 5px 10px 3px;
+  }
+  .tag-cloud-tags a:before{
+    content: "🔖";
+  }
+
+  .tag-cloud-tags a:hover{
+     box-shadow: 0px 5px 15px 0px rgba(0,0,0,.4);
+     transform: scale(1.1);
+     /*box-shadow: 10px 10px 15px 2px rgba(0,0,0,.12), 0 0 6px 0 rgba(104, 104, 105, 0.1);*/
+     transition-duration: 0.15s;
+  }
+
+</style>
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2019 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Alyssa</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/pisces.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+  <script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+<script type="text/x-mathjax-config">
+
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ['\\(', '\\)'] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+      equationNumbers: {
+        autoNumber: 'AMS'
+      }
+    }
+  });
+
+  MathJax.Hub.Register.StartupHook('TeX Jax Ready', function() {
+    MathJax.InputJax.TeX.prefilterHooks.Add(function(data) {
+      if (data.display) {
+        var next = data.script.nextSibling;
+        while (next && next.nodeName.toLowerCase() === '#text') {
+          next = next.nextSibling;
+        }
+        if (next && next.nodeName.toLowerCase() === 'br') {
+          next.parentNode.removeChild(next);
+        }
+      }
+    });
+  });
+
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for (i = 0; i < all.length; i += 1) {
+      element = document.getElementById(all[i].inputID + '-Frame').parentNode;
+      if (element.nodeName.toLowerCase() == 'li') {
+        element = element.parentNode;
+      }
+      element.classList.add('has-jax');
+    }
+  });
+</script>
+<script>
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_HTMLorMML', () => {
+    MathJax.Hub.Typeset();
+  }, window.MathJax);
+</script>
+
+    
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID: 'a0b09f47cc93396b2dd6',
+      clientSecret: 'bdf8c7211c890d37071003e98dd9879483be6512',
+      repo: 'alyssaasa.github.io',
+      owner: 'alyssaasa',
+      admin: ['alyssaasa'],
+      id: '8a50a96016ce227c3566ce9f6acad979',
+        language: 'zh-CN',
+      distractionFreeMode: 'true'
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+</script>
+
+</body>
+</html>

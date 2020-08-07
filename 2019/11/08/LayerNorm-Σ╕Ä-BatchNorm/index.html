@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/2.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/1.png">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '7.5.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":true,"scrollpercent":true},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":true,"trigger":"auto","top_n_per_article":10,"unescape":false,"preload":false},
+    path: './public/search.xml',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: '复制',
+      copy_success: '复制成功',
+      copy_failure: '复制失败'
+    },
+    sidebarPadding: 40
+  };
+</script>
+
+  <meta name="description" content="🌼  Batch Normalization1. 作用：batch normalization 主要起到正则化的作用，可以加速网络收敛，并防止梯度消失。具体解释可以看： https://www.bilibili.com/video/av16000304 2. 做法： 对每个batch的元素求均值和方差：E(x) = \frac{1}{m}\sum\limits_i x_iVar(x) = \fr">
+<meta name="keywords" content="深度学习">
+<meta property="og:type" content="article">
+<meta property="og:title" content="BatchNorm 与 LayerNorm">
+<meta property="og:url" content="http://yoursite.com/2019/11/08/LayerNorm-Σ╕Ä-BatchNorm/index.html">
+<meta property="og:site_name" content="各有未来">
+<meta property="og:description" content="🌼  Batch Normalization1. 作用：batch normalization 主要起到正则化的作用，可以加速网络收敛，并防止梯度消失。具体解释可以看： https://www.bilibili.com/video/av16000304 2. 做法： 对每个batch的元素求均值和方差：E(x) = \frac{1}{m}\sum\limits_i x_iVar(x) = \fr">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://yoursite.com/images/others/1.jpg">
+<meta property="og:updated_time" content="2019-11-10T07:53:22.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="BatchNorm 与 LayerNorm">
+<meta name="twitter:description" content="🌼  Batch Normalization1. 作用：batch normalization 主要起到正则化的作用，可以加速网络收敛，并防止梯度消失。具体解释可以看： https://www.bilibili.com/video/av16000304 2. 做法： 对每个batch的元素求均值和方差：E(x) = \frac{1}{m}\sum\limits_i x_iVar(x) = \fr">
+<meta name="twitter:image" content="http://yoursite.com/images/others/1.jpg">
+
+<link rel="canonical" href="http://yoursite.com/2019/11/08/LayerNorm-Σ╕Ä-BatchNorm/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>BatchNorm 与 LayerNorm | 各有未来</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">各有未来</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="none"
+           placeholder="搜索..." spellcheck="false"
+           type="text" id="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/11/08/LayerNorm-Σ╕Ä-BatchNorm/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/toux.jpg">
+      <meta itemprop="name" content="Alyssa">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="各有未来">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          BatchNorm 与 LayerNorm
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-11-08 14:30:43" itemprop="dateCreated datePublished" datetime="2019-11-08T14:30:43+08:00">2019-11-08</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2019-11-10 15:53:22" itemprop="dateModified" datetime="2019-11-10T15:53:22+08:00">2019-11-10</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/深度学习/" itemprop="url" rel="index">
+                    <span itemprop="name">深度学习</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h4 id="🌼-Batch-Normalization"><a href="#🌼-Batch-Normalization" class="headerlink" title="🌼  Batch Normalization"></a>🌼  <a href="http://arxiv.org/abs/1502.03167" target="_blank" rel="noopener">Batch Normalization</a></h4><h5 id="1-作用："><a href="#1-作用：" class="headerlink" title="1. 作用："></a>1. 作用：</h5><p>batch normalization 主要起到正则化的作用，可以加速网络收敛，并防止梯度消失。<br>具体解释可以看： <a href="https://www.bilibili.com/video/av16000304" target="_blank" rel="noopener">https://www.bilibili.com/video/av16000304</a> </p><h5 id="2-做法："><a href="#2-做法：" class="headerlink" title="2. 做法："></a>2. 做法：</h5><ul>
+<li>对每个batch的元素求均值和方差：<script type="math/tex; mode=display">E(x) = \frac{1}{m}\sum\limits_i x_i</script><script type="math/tex; mode=display">Var(x) = \frac{1}{m}\sum\limits_i(x_i-E(x))^2</script></li>
+<li>用均值和方差对每个元素进行归一化：<script type="math/tex; mode=display">\hat{x_i}= \frac{x_i-E(x)}{\sqrt{Var(x)+ \epsilon }}</script></li>
+<li>因为使用了归一化，强制改变了学习到的分布，所以加了两个可以学习的参数 <script type="math/tex">\gamma</script> 和 <script type="math/tex">\beta</script> 来恢复分布：<script type="math/tex; mode=display">y_i= \frac{x_i-E(x)}{\sqrt{Var(x)+ \epsilon }}*\gamma + \beta</script></li>
+</ul><a id="more"></a>
+
+<h5 id="3-BN层的反向传播："><a href="#3-BN层的反向传播：" class="headerlink" title="3. BN层的反向传播："></a>3. BN层的反向传播：</h5><ul>
+<li>反向传播时，我们需要求 <script type="math/tex">\frac{\partial L}{\partial \gamma}</script>， <script type="math/tex">\frac{\partial L}{\partial \beta}</script> 和 <script type="math/tex">\frac{\partial L}{\partial x_i}</script></li>
+<li>求  <script type="math/tex">\frac{\partial L}{\partial x_i}</script> 以更新 <script type="math/tex">w</script> 和 <script type="math/tex">b</script>。求  <script type="math/tex">\frac{\partial L}{\partial x_i}</script> 时，需要用到  <script type="math/tex">\frac{\partial L}{\partial \mu}</script>， <script type="math/tex">\frac{\partial L}{\partial \sigma^2}</script> 和 <script type="math/tex">\frac{\partial L}{\partial \hat{x_i}}</script></li>
+</ul>
+<script type="math/tex; mode=display">\begin{cases} \hat{x_i}= \frac{x_i-\mu}{\sqrt{\sigma^2+ \epsilon }} \\ y_i= \hat{x_i}*\gamma + \beta\end{cases}</script><ul>
+<li><p>先求 <script type="math/tex">\frac{\partial L}{\partial \gamma}</script>， <script type="math/tex">\frac{\partial L}{\partial \beta}</script>：</p>
+<script type="math/tex; mode=display">\begin{cases} \frac{\partial L}{\partial \gamma} = \sum\limits_i \frac{\partial L}{\partial y_i}·\frac{\partial y_i}{\partial \gamma} =  \sum\limits_i \frac{\partial L}{\partial y_i}·\hat{x_i} \\ \frac{\partial L}{\partial \beta} = \sum\limits_i \frac{\partial L}{\partial y_i}·\frac{\partial y_i}{\partial \beta} =  \sum\limits_i \frac{\partial L}{\partial y_i} \end{cases}</script></li>
+<li><p>求 <script type="math/tex">\frac{\partial L}{\partial x_i}</script>：</p>
+<script type="math/tex; mode=display">\begin{align} & \begin{cases} \frac{\partial L}{\partial \hat{x_i}} = \sum\limits_i \frac{\partial L}{\partial y_i}·\frac{\partial y_i}{\partial \hat{x_i}} =  \sum\limits_i \frac{\partial L}{\partial y_i}·\gamma \\ \frac{\partial L}{\partial \sigma^2} = \sum\limits_i \frac{\partial L}{\partial y_i}·\frac{\partial y_i}{\partial \hat{x_i}}·\frac{\partial \hat{x_i}}{\partial \sigma^2} = \sum\limits_i  \frac{\partial L}{\partial \hat{x_i}} ·\frac{\partial \hat{x_i}}{\partial \sigma^2}= \sum\limits_i \frac{\partial L}{\partial y_i}·\gamma·-\frac{x_i-\mu}{2}(\sigma^2+\epsilon )^{-\frac{3}{2}} \\  \frac{\partial L}{\partial \mu} = \sum\limits_i \frac{\partial L}{\partial \sigma^2}·\frac{\partial \sigma^2}{\partial \mu} + \sum\limits_i \frac{\partial L}{\partial \hat{x_i}}·\frac{\partial \hat{x_i}}{\partial \mu}= \sum\limits_i [\frac{\partial L}{\partial \hat{x_i}}·(-\frac{1}{\sqrt{\sigma^2+\epsilon}}) + \frac{\partial L}{\partial \sigma^2}·\frac{-2\sum_i(x_i-\mu)}{m}]\end{cases} \\ & ==>\frac{\partial L}{\partial x_i} = \frac{\partial L}{\partial \hat{x_i}}· \frac{\partial \hat{x_i}}{\partial x_i}+\frac{\partial L}{\partial \sigma^2}· \frac{\partial \sigma^2}{\partial x_i}+\frac{\partial L}{\partial \mu}· \frac{\partial \mu}{\partial x_i} \end{align}</script></li>
+<li><p>⭐<script type="math/tex">y_i=f(\hat{x_i})；\hat{x_i}=g(x_i,\mu,\sigma^2)；\mu=h(x_i)；\sigma^2=m(\mu, x_i)</script> 在求偏导关系的时候，我们先把函数关系和他们的参数都写出来，如前面所示。比如要求 <script type="math/tex">\frac{\partial L}{\partial \mu}</script>，根据函数与参数的关系式，我们可以看到，<script type="math/tex">\hat{x_i}=g(x_i,\mu,\sigma^2)；\sigma^2=m(\mu, x_i)</script> 两个式子中有 <script type="math/tex">\mu</script>，那么则有下式，其他同理。</p>
+</li>
+</ul>
+<script type="math/tex; mode=display">\frac{\partial L}{\partial \mu} = \sum\limits_i \frac{\partial L}{\partial \sigma^2}·\frac{\partial \sigma^2}{\partial \mu} + \sum\limits_i \frac{\partial L}{\partial \hat{x_i}}·\frac{\partial \hat{x_i}}{\partial \mu}</script><h5 id="4-测试阶段：平均移动"><a href="#4-测试阶段：平均移动" class="headerlink" title="4. 测试阶段：平均移动"></a>4. 测试阶段：平均移动</h5><p>在测试时，若输入单张图片，则无法求均值和方差，那么测试阶段的 <script type="math/tex">\mu</script> 和 <script type="math/tex">\sigma^2</script> 用的是训练时所有的 <script type="math/tex">\mu</script> 和 <script type="math/tex">\sigma^2</script> 的均值。<br>训练时为何不用：可能与梯度优化存在冲突。（原论文就是这样解释的）</p>
+<h4 id="🌼-Layer-Normalization"><a href="#🌼-Layer-Normalization" class="headerlink" title="🌼  Layer Normalization"></a>🌼  <a href="https://arxiv.org/abs/1607.06450" target="_blank" rel="noopener">Layer Normalization</a></h4><p>原博链接： <a href="https://zhuanlan.zhihu.com/p/54530247" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/54530247</a> </p>
+<p>BN并不适用于RNN等动态网络和batchsize较小的时候效果不好。Layer Normalization（LN）的提出有效的解决BN的这两个问题。LN和BN不同点是归一化的维度是互相垂直的，如图所示。在下图中 <script type="math/tex">N</script> 表示样本轴， <script type="math/tex">C</script> 表示通道轴，<script type="math/tex">F</script> 是每个通道的特征数量。</p>
+<ul>
+<li>BN如右侧所示，它是取不同样本的同一个通道的特征做归一化；</li>
+<li>LN则是如左侧所示，它取的是同一个样本的不同通道做归一化。 </li>
+</ul>
+<p><img src="/images/others/1.jpg" alt="img"></p>
+<p>BN为什么不适用于RNN等网络具体看原博。</p>
+<h4 id="🌼-Tensorflow-源码"><a href="#🌼-Tensorflow-源码" class="headerlink" title="🌼 Tensorflow 源码"></a>🌼 Tensorflow 源码</h4><p>链接： <a href="https://www.github.com/tensorflow/tensorflow/blob/r1.8/tensorflow/contrib/layers/python/layers/layers.py" target="_blank" rel="noopener">tensorflow/contrib/layers/python/layers/layers.py</a></p>
+<ul>
+<li>tf.contrib.layers.batch_norm() 和 tf.contrib.layers.layer_norm() 的主要作用是根据自己需要求的维度，先求出均值和方差，并为 beta 和 gamma 进行初始化.</li>
+<li>tf.nn.batch_normalization() 的作用是根据你求出的均值和方差，对原输入进行归一化操作。</li>
+</ul>
+<h5 id="1-tf-nn-moments-函数"><a href="#1-tf-nn-moments-函数" class="headerlink" title="1. tf.nn.moments()函数"></a>1. <a href="https://blog.csdn.net/qq_16320025/article/details/89397883" target="_blank" rel="noopener">tf.nn.moments()函数</a></h5><ul>
+<li>定义：<code>def moments(x, axes, name=None, keep_dims=False)</code></li>
+<li><p>解释：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">x 可以理解为我们输出的数据，形如 [batchsize, height, width, channel]</span><br><span class="line">axes 表示在哪个维度上求解，是个list，例如 [0, 1, 2]</span><br><span class="line">name 就是个名字，不多解释</span><br><span class="line">keep_dims 是否保持维度，不多解释</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>输出：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">Two Tensor objects: mean andvariance. (均值和方差)</span><br><span class="line">输出的维度：axes表示要在哪些维度上求解，输出的均值和方差的维度与剩下的维度保持一致。</span><br><span class="line">例如：</span><br><span class="line">  inputs.shape = [<span class="number">128</span>,<span class="number">4</span>,<span class="number">2</span>,<span class="number">5</span>], axes = [<span class="number">0</span>,<span class="number">1</span>,<span class="number">2</span>], 那么 mean.shape = [<span class="number">5</span>]</span><br><span class="line">  inputs.shape = [<span class="number">128</span>,<span class="number">4</span>,<span class="number">2</span>,<span class="number">5</span>], axes = [<span class="number">0</span>,<span class="number">1</span>], 那么 mean.shape = [<span class="number">2</span>,<span class="number">5</span>]</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>举例：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># coding: utf-8</span></span><br><span class="line"><span class="keyword">import</span> tensorflow <span class="keyword">as</span> tf</span><br><span class="line">img = tf.Variable(tf.random_normal([<span class="number">128</span>, <span class="number">4</span>, <span class="number">2</span>, <span class="number">3</span>]))</span><br><span class="line">axis = [<span class="number">0</span>,<span class="number">1</span>,<span class="number">2</span>] <span class="comment"># 所以剩余的是四维，看做一个整体shape为[3]</span></span><br><span class="line">mean, variance = tf.nn.moments(img, axis)</span><br><span class="line">init = tf.global_variables_initializer()</span><br><span class="line"><span class="keyword">with</span> tf.Session() <span class="keyword">as</span> sess:</span><br><span class="line">    sess.run(init)</span><br><span class="line">    mean_, variance_ = sess.run([mean, variance])</span><br><span class="line">    print(<span class="string">"均值："</span>,mean_)</span><br><span class="line">    print(<span class="string">"方差："</span>,variance_)</span><br><span class="line">均值： [<span class="number">-0.03587267</span>  <span class="number">0.06021447</span>  <span class="number">0.02401767</span>]</span><br><span class="line">方差： [<span class="number">0.99473494</span> <span class="number">0.93040663</span> <span class="number">0.98113006</span>]</span><br><span class="line"></span><br><span class="line">eg2:</span><br><span class="line"><span class="comment"># coding: utf-8</span></span><br><span class="line"><span class="keyword">import</span> tensorflow <span class="keyword">as</span> tf</span><br><span class="line">img = tf.Variable(tf.random_normal([<span class="number">128</span>, <span class="number">4</span>, <span class="number">2</span>, <span class="number">3</span>]))</span><br><span class="line">axis = [<span class="number">0</span>,<span class="number">1</span>] <span class="comment">#所以剩余的是第三 四维，看做一个整体shape为[2, 3]</span></span><br><span class="line">mean, variance = tf.nn.moments(img, axis)</span><br><span class="line">init = tf.global_variables_initializer()</span><br><span class="line"><span class="keyword">with</span> tf.Session() <span class="keyword">as</span> sess:</span><br><span class="line">    sess.run(init)</span><br><span class="line">    mean_, variance_ = sess.run([mean, variance])</span><br><span class="line">    print(<span class="string">"均值："</span>,mean_)</span><br><span class="line">    print(<span class="string">"方差："</span>,variance_)</span><br><span class="line">均值: </span><br><span class="line">    [[<span class="number">-0.04313184</span>  <span class="number">0.01417894</span>  <span class="number">0.06847101</span>]</span><br><span class="line">     [ <span class="number">0.04183875</span> <span class="number">-0.01508999</span> <span class="number">-0.11406976</span>]]</span><br><span class="line">方差： </span><br><span class="line">    [[<span class="number">0.976376</span>   <span class="number">0.91841435</span> <span class="number">1.0207324</span> ]</span><br><span class="line">     [<span class="number">1.0403597</span>  <span class="number">0.9773739</span>  <span class="number">1.0360421</span> ]]</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h5 id="2-tf-contrib-layers-batch-norm-函数"><a href="#2-tf-contrib-layers-batch-norm-函数" class="headerlink" title="2. tf.contrib.layers.batch_norm() 函数"></a>2. tf.contrib.layers.batch_norm() 函数</h5><p>代码中和计算均值和方差不太相关的地方删掉了，可以自行看源码。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">batch_norm</span><span class="params">(inputs,</span></span></span><br><span class="line"><span class="function"><span class="params">               decay=<span class="number">0.999</span>,</span></span></span><br><span class="line"><span class="function"><span class="params">               center=True,</span></span></span><br><span class="line"><span class="function"><span class="params">               scale=False,</span></span></span><br><span class="line"><span class="function"><span class="params">               epsilon=<span class="number">0.001</span>,</span></span></span><br><span class="line"><span class="function"><span class="params">               activation_fn=None,</span></span></span><br><span class="line"><span class="function"><span class="params">               param_initializers=None,</span></span></span><br><span class="line"><span class="function"><span class="params">               param_regularizers=None,</span></span></span><br><span class="line"><span class="function"><span class="params">               updates_collections=ops.GraphKeys.UPDATE_OPS,</span></span></span><br><span class="line"><span class="function"><span class="params">               is_training=True,</span></span></span><br><span class="line"><span class="function"><span class="params">               reuse=None,</span></span></span><br><span class="line"><span class="function"><span class="params">               variables_collections=None,</span></span></span><br><span class="line"><span class="function"><span class="params">               outputs_collections=None,</span></span></span><br><span class="line"><span class="function"><span class="params">               trainable=True,</span></span></span><br><span class="line"><span class="function"><span class="params">               batch_weights=None,</span></span></span><br><span class="line"><span class="function"><span class="params">               fused=None,</span></span></span><br><span class="line"><span class="function"><span class="params">               data_format=DATA_FORMAT_NHWC,</span></span></span><br><span class="line"><span class="function"><span class="params">               zero_debias_moving_mean=False,</span></span></span><br><span class="line"><span class="function"><span class="params">               scope=None,</span></span></span><br><span class="line"><span class="function"><span class="params">               renorm=False,</span></span></span><br><span class="line"><span class="function"><span class="params">               renorm_clipping=None,</span></span></span><br><span class="line"><span class="function"><span class="params">               renorm_decay=<span class="number">0.99</span>,</span></span></span><br><span class="line"><span class="function"><span class="params">               adjustment=None)</span>:</span></span><br><span class="line">  <span class="string">"""Adds a Batch Normalization layer from .</span></span><br><span class="line"><span class="string">  1. Can be used as a normalizer function for conv2d and fully_connected. </span></span><br><span class="line"><span class="string">  2. Args:</span></span><br><span class="line"><span class="string">      - inputs: A tensor with 2 or more dimensions, where the first dimension has `batch_size`. </span></span><br><span class="line"><span class="string">        The normalization is over all but the last dimension if `data_format` is `NHWC` </span></span><br><span class="line"><span class="string">        and the second dimension if `data_format` is `NCHW`.</span></span><br><span class="line"><span class="string">        也就是说：channel通道不做归一化，即 batch norm 取不同样本的同一个通道的特征做归一化；</span></span><br><span class="line"><span class="string">      - data_format: A string. `NHWC` (default) and `NCHW` are supported.</span></span><br><span class="line"><span class="string">      - reuse的相关内容看源码</span></span><br><span class="line"><span class="string">      - updates_collections：when training, the moving_mean and moving_variance need to be updated. </span></span><br><span class="line"><span class="string">        By default the update ops are placed in updates_collections = tf.GraphKeys.UPDATE_OPS. </span></span><br><span class="line"><span class="string">        If None, a control dependency would be added to make sure the updates are computed in place.</span></span><br><span class="line"><span class="string">  3. Returns:</span></span><br><span class="line"><span class="string">      A `Tensor` representing the output of the operation.</span></span><br><span class="line"><span class="string">  """</span></span><br><span class="line">  inputs = ops.convert_to_tensor(inputs)</span><br><span class="line">  rank = inputs.get_shape().ndims</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> data_format <span class="keyword">not</span> <span class="keyword">in</span> (DATA_FORMAT_NCHW, DATA_FORMAT_NHWC):</span><br><span class="line">     <span class="keyword">raise</span> ValueError(<span class="string">'data_format has to be either NCHW or NHWC.'</span>)</span><br><span class="line"></span><br><span class="line">  layer_variable_getter = _build_variable_getter()</span><br><span class="line">  <span class="keyword">with</span> variable_scope.variable_scope(scope,<span class="string">'BatchNorm'</span>, [inputs],reuse=reuse, custom_getter=layer_variable_getter) <span class="keyword">as</span> sc:</span><br><span class="line">    inputs = ops.convert_to_tensor(inputs)</span><br><span class="line">    inputs_shape = inputs.get_shape()</span><br><span class="line">    inputs_rank = inputs_shape.ndims</span><br><span class="line">    <span class="keyword">if</span> inputs_rank <span class="keyword">is</span> <span class="literal">None</span>:</span><br><span class="line">       <span class="keyword">raise</span> ValueError(<span class="string">'Inputs %s has undefined rank.'</span> % inputs.name)</span><br><span class="line">    dtype = inputs.dtype.base_dtype</span><br><span class="line">    ......</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> data_format == DATA_FORMAT_NCHW:</span><br><span class="line">       moments_axes = [<span class="number">0</span>] + list(range(<span class="number">2</span>, inputs_rank))  <span class="comment"># [0,2,3]</span></span><br><span class="line">       params_shape = inputs_shape[<span class="number">1</span>:<span class="number">2</span>] <span class="comment"># C</span></span><br><span class="line">       <span class="comment"># params_shape的rank和inputs_rank相同，除了channel维度以外，其他都是1 -&gt; [1,C,1,1]</span></span><br><span class="line">       params_shape_broadcast = list([<span class="number">1</span>, inputs_shape[<span class="number">1</span>].value] + [<span class="number">1</span> <span class="keyword">for</span> _ <span class="keyword">in</span> range(<span class="number">2</span>, inputs_rank)])</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">       moments_axes = list(range(inputs_rank - <span class="number">1</span>)) <span class="comment"># [1,2,3]</span></span><br><span class="line">       params_shape = inputs_shape[<span class="number">-1</span>:]  <span class="comment"># C</span></span><br><span class="line">       params_shape_broadcast = <span class="literal">None</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># Allocate parameters for the beta and gamma of the normalization.</span></span><br><span class="line">    beta, gamma = <span class="literal">None</span>, <span class="literal">None</span></span><br><span class="line">    ......</span><br><span class="line">    beta = variables.model_variable(<span class="string">'beta'</span>, shape=params_shape, dtype=dtype, initializer=beta_initializer, collections=beta_collections, trainable=trainable)</span><br><span class="line">    gamma = variables.model_variable(<span class="string">'gamma'</span>, shape=params_shape, dtype=dtype, initializer=gamma_initializer, collections=gamma_collections, trainable=trainable)</span><br><span class="line">    </span><br><span class="line">    <span class="comment"># Create moving_mean and moving_variance variables</span></span><br><span class="line">    ......</span><br><span class="line">    moving_mean = variables.model_variable(<span class="string">'moving_mean'</span>, shape=params_shape, dtype=dtype, initializer=moving_mean_initializer, trainable=<span class="literal">False</span>, collections=moving_mean_collections)</span><br><span class="line">    moving_variance = variables.model_variable(<span class="string">'moving_variance'</span>, shape=params_shape, dtype=dtype, initializer=moving_variance_initializer, trainable=<span class="literal">False</span>, collections=moving_variance_collections)</span><br><span class="line">    </span><br><span class="line">    <span class="comment"># 判断是训练阶段还是测试阶段，不同的时期计算均值的方差的方式是不同的，训练时基于的是batch</span></span><br><span class="line">    is_training_value = utils.constant_value(is_training)</span><br><span class="line">    need_moments = is_training_value <span class="keyword">is</span> <span class="literal">None</span> <span class="keyword">or</span> is_training_value</span><br><span class="line">    <span class="keyword">if</span> need_moments:</span><br><span class="line">       <span class="comment"># Calculate the moments based on the individual batch.</span></span><br><span class="line">       ......</span><br><span class="line">       <span class="keyword">if</span> data_format == DATA_FORMAT_NCHW:</span><br><span class="line">          <span class="comment"># 下面这样写和直接：mean, variance = nn.moments(inputs, moments_axes) 有啥区别..？</span></span><br><span class="line">          mean, variance = nn.moments(inputs, moments_axes, keep_dims=<span class="literal">True</span>)</span><br><span class="line">          mean = array_ops.reshape(mean, [<span class="number">-1</span>])</span><br><span class="line">          variance = array_ops.reshape(variance, [<span class="number">-1</span>])</span><br><span class="line">       <span class="keyword">else</span>:</span><br><span class="line">          mean, variance = nn.moments(inputs, moments_axes)</span><br><span class="line">       </span><br><span class="line">       <span class="comment"># 训练阶段，moving_mean, moving_variance 需要更新。</span></span><br><span class="line">       moving_vars_fn = <span class="keyword">lambda</span>: (moving_mean, moving_variance)</span><br><span class="line">       <span class="keyword">if</span> updates_collections <span class="keyword">is</span> <span class="literal">None</span>:</span><br><span class="line">          <span class="function"><span class="keyword">def</span> <span class="title">_force_updates</span><span class="params">()</span>:</span></span><br><span class="line">             <span class="string">"""Internal function forces updates moving_vars if is_training."""</span></span><br><span class="line">             update_moving_mean = moving_averages.assign_moving_average(moving_mean, mean, decay, zero_debias=zero_debias_moving_mean)</span><br><span class="line">             update_moving_variance = moving_averages.assign_moving_average(moving_variance, variance, decay, zero_debias=<span class="literal">False</span>)</span><br><span class="line">             <span class="keyword">with</span> ops.control_dependencies([update_moving_mean, update_moving_variance]):</span><br><span class="line">                <span class="keyword">return</span> array_ops.identity(mean), array_ops.identity(variance)</span><br><span class="line">          <span class="comment"># need_moments 不是已经能够判断是不是在训练阶段了吗?</span></span><br><span class="line">          mean, variance = utils.smart_cond(is_training, _force_updates, moving_vars_fn)</span><br><span class="line">       <span class="keyword">else</span>:</span><br><span class="line">          <span class="function"><span class="keyword">def</span> <span class="title">_delay_updates</span><span class="params">()</span>:</span></span><br><span class="line">             <span class="string">"""Internal function that delay updates moving_vars if is_training."""</span></span><br><span class="line">             update_moving_mean = moving_averages.assign_moving_average(moving_mean, mean, decay, zero_debias=zero_debias_moving_mean)</span><br><span class="line">             update_moving_variance = moving_averages.assign_moving_average(moving_variance, variance, decay, zero_debias=<span class="literal">False</span>)</span><br><span class="line">             <span class="keyword">return</span> update_moving_mean, update_moving_variance</span><br><span class="line"></span><br><span class="line">          update_mean, update_variance = utils.smart_cond(is_training, _delay_updates, moving_vars_fn)</span><br><span class="line">          ops.add_to_collections(updates_collections, update_mean)</span><br><span class="line">          ops.add_to_collections(updates_collections, update_variance)</span><br><span class="line">        </span><br><span class="line">          <span class="comment"># Use computed moments during training and moving_vars otherwise.</span></span><br><span class="line">          vars_fn = <span class="keyword">lambda</span>: (mean, variance)</span><br><span class="line">          mean, variance = utils.smart_cond(is_training, vars_fn, moving_vars_fn)</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">       mean, variance = moving_mean, moving_variance</span><br><span class="line">    <span class="keyword">if</span> data_format == DATA_FORMAT_NCHW:</span><br><span class="line">       mean = array_ops.reshape(mean, params_shape_broadcast)</span><br><span class="line">       variance = array_ops.reshape(variance, params_shape_broadcast)</span><br><span class="line">       <span class="keyword">if</span> beta <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>:</span><br><span class="line">          beta = array_ops.reshape(beta, params_shape_broadcast)</span><br><span class="line">       <span class="keyword">if</span> gamma <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>:</span><br><span class="line">          gamma = array_ops.reshape(gamma, params_shape_broadcast)</span><br><span class="line">        </span><br><span class="line">    <span class="comment"># Compute batch_normalization.</span></span><br><span class="line">    outputs = nn.batch_normalization(inputs, mean, variance, beta, gamma, epsilon)</span><br><span class="line">    outputs.set_shape(inputs_shape)</span><br><span class="line">    <span class="keyword">if</span> activation_fn <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>:</span><br><span class="line">       outputs = activation_fn(outputs)</span><br><span class="line">    <span class="keyword">return</span> utils.collect_named_outputs(outputs_collections, sc.name, outputs)</span><br></pre></td></tr></table></figure>
+<h5 id="3-tf-contrib-layers-layer-norm-函数"><a href="#3-tf-contrib-layers-layer-norm-函数" class="headerlink" title="3. tf.contrib.layers.layer_norm() 函数"></a>3. tf.contrib.layers.layer_norm() 函数</h5><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">layer_norm</span><span class="params">(inputs,</span></span></span><br><span class="line"><span class="function"><span class="params">               center=True,</span></span></span><br><span class="line"><span class="function"><span class="params">               scale=True,</span></span></span><br><span class="line"><span class="function"><span class="params">               activation_fn=None,</span></span></span><br><span class="line"><span class="function"><span class="params">               reuse=None,</span></span></span><br><span class="line"><span class="function"><span class="params">               variables_collections=None,</span></span></span><br><span class="line"><span class="function"><span class="params">               outputs_collections=None,</span></span></span><br><span class="line"><span class="function"><span class="params">               trainable=True,</span></span></span><br><span class="line"><span class="function"><span class="params">               begin_norm_axis=<span class="number">1</span>,</span></span></span><br><span class="line"><span class="function"><span class="params">               begin_params_axis=<span class="number">-1</span>,</span></span></span><br><span class="line"><span class="function"><span class="params">               scope=None)</span>:</span></span><br><span class="line"><span class="string">"""Adds a Layer Normalization layer.</span></span><br><span class="line"><span class="string">1. Can be used as a normalizer function for conv2d and fully_connected.</span></span><br><span class="line"><span class="string">2. Given a tensor `inputs` of rank `R`, moments are calculated and normalization is performed over axes `begin_norm_axis ... R - 1`.  Scaling and centering, if requested, is performed over axes `begin_params_axis .. R - 1`. By default, `begin_norm_axis = 1` and `begin_params_axis = -1`, meaning that normalization is performed over all but the first axis (the `HWC` if `inputs` is `NHWC`), while the `beta` and `gamma` trainable parameters are calculated for the rightmost axis (the `C` if `inputs` is `NHWC`). Scaling and recentering is performed via broadcast of the `beta` and `gamma` parameters with the normalized tensor.</span></span><br><span class="line"><span class="string">3. The shapes of `beta` and `gamma` are `inputs.shape[begin_params_axis:]`, and this part of the inputs' shape must be fully defined.</span></span><br><span class="line"><span class="string">4. Args:</span></span><br><span class="line"><span class="string">    - inputs: A tensor having rank `R`. The normalization is performed over axes `begin_norm_axis ... R  - 1` and centering and scaling parameters are calculated over `begin_params_axis ... R - 1`.</span></span><br><span class="line"><span class="string">    - center: If True, add offset of `beta` to normalized tensor. If False, `beta` is ignored.</span></span><br><span class="line"><span class="string">    - scale: If True, multiply by `gamma`. If False, `gamma` is not used. When the next layer is linear (also e.g. `nn.relu`), this can be disabled since the scaling can be done by the next layer.</span></span><br><span class="line"><span class="string">    - activation_fn: Activation function, default set to None to skip it and maintain a linear activation.</span></span><br><span class="line"><span class="string">    - begin_norm_axis: The first normalization dimension: normalization will be performed along dimensions `begin_norm_axis : rank(inputs)`</span></span><br><span class="line"><span class="string">    - begin_params_axis: The first parameter (beta, gamma) dimension: scale and centering parameters will have dimensions `begin_params_axis : rank(inputs)` and will be broadcast with the normalized inputs accordingly.</span></span><br><span class="line"><span class="string">5. Returns:</span></span><br><span class="line"><span class="string">    A `Tensor` representing the output of the operation, having the same shape and dtype as `inputs`.</span></span><br><span class="line"><span class="string">"""</span></span><br><span class="line">  <span class="keyword">with</span> variable_scope.variable_scope(scope, <span class="string">'LayerNorm'</span>, [inputs], reuse=reuse) <span class="keyword">as</span> sc:</span><br><span class="line">    inputs = ops.convert_to_tensor(inputs)</span><br><span class="line">    inputs_shape = inputs.shape</span><br><span class="line">    inputs_rank = inputs_shape.ndims</span><br><span class="line">    <span class="keyword">if</span> inputs_rank <span class="keyword">is</span> <span class="literal">None</span>:</span><br><span class="line">      <span class="keyword">raise</span> ValueError(<span class="string">'Inputs %s has undefined rank.'</span> % inputs.name)</span><br><span class="line">    dtype = inputs.dtype.base_dtype</span><br><span class="line">    <span class="keyword">if</span> begin_norm_axis &lt; <span class="number">0</span>:</span><br><span class="line">      begin_norm_axis = inputs_rank + begin_norm_axis</span><br><span class="line">    <span class="keyword">if</span> begin_params_axis &gt;= inputs_rank <span class="keyword">or</span> begin_norm_axis &gt;= inputs_rank:</span><br><span class="line">      <span class="keyword">raise</span> ValueError(<span class="string">'begin_params_axis (%d) and begin_norm_axis (%d) must be &lt; rank(inputs) (%d)'</span> % (begin_params_axis, begin_norm_axis, inputs_rank))</span><br><span class="line">    params_shape = inputs_shape[begin_params_axis:]</span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> params_shape.is_fully_defined():</span><br><span class="line">      <span class="keyword">raise</span> ValueError(<span class="string">'Inputs %s: shape(inputs)[%s:] is not fully defined: %s'</span> % (inputs.name, begin_params_axis, inputs_shape))</span><br><span class="line">    </span><br><span class="line">    <span class="comment"># Allocate parameters for the beta and gamma of the normalization.</span></span><br><span class="line">    beta, gamma = <span class="literal">None</span>, <span class="literal">None</span></span><br><span class="line">    <span class="keyword">if</span> center:</span><br><span class="line">      beta_collections = utils.get_variable_collections(variables_collections,<span class="string">'beta'</span>)</span><br><span class="line">      beta = variables.model_variable(<span class="string">'beta'</span>, shape=params_shape,dtype=dtype, initializer=init_ops.zeros_initializer(), collections=beta_collections, trainable=trainable)</span><br><span class="line">    <span class="keyword">if</span> scale:</span><br><span class="line">      gamma_collections = utils.get_variable_collections(variables_collections, <span class="string">'gamma'</span>)</span><br><span class="line">      gamma = variables.model_variable(<span class="string">'gamma'</span>, shape=params_shape, dtype=dtype, initializer=init_ops.ones_initializer(), collections=gamma_collections, trainable=trainable)</span><br><span class="line">        </span><br><span class="line">    <span class="comment"># Calculate the moments on the last axis (layer activations).</span></span><br><span class="line">    norm_axes = list(range(begin_norm_axis, inputs_rank))</span><br><span class="line">    mean, variance = nn.moments(inputs, norm_axes, keep_dims=<span class="literal">True</span>)</span><br><span class="line">    </span><br><span class="line">    <span class="comment"># Compute layer normalization using the batch_normalization function.</span></span><br><span class="line">    variance_epsilon = <span class="number">1e-12</span></span><br><span class="line">    outputs = nn.batch_normalization(inputs, mean, variance, offset=beta, scale=gamma, variance_epsilon=variance_epsilon)</span><br><span class="line">    outputs.set_shape(inputs_shape)</span><br><span class="line">    <span class="keyword">if</span> activation_fn <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>:</span><br><span class="line">      outputs = activation_fn(outputs)</span><br><span class="line">    <span class="keyword">return</span> utils.collect_named_outputs(outputs_collections, sc.name, outputs)</span><br></pre></td></tr></table></figure>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          
+          <div class="post-tags">
+              <a href="/tags/深度学习/" rel="tag"><i class="fa fa-tag"></i> 深度学习</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+                <a href="/2019/11/06/µ╖▒σ║ªσ¡ªΣ╣áCTRΘóäΣ╝░µ¿íσ₧ï/" rel="next" title="基于深度学习的CTR预估模型">
+                  <i class="fa fa-chevron-left"></i> 基于深度学习的CTR预估模型
+                </a>
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+                <a href="/2019/11/10/Gitσ¡ªΣ╣á/" rel="prev" title="Git学习">
+                  Git学习 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#🌼-Batch-Normalization"><span class="nav-number">1.</span> <span class="nav-text">🌼  Batch Normalization</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#1-作用："><span class="nav-number">1.1.</span> <span class="nav-text">1. 作用：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-做法："><span class="nav-number">1.2.</span> <span class="nav-text">2. 做法：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3-BN层的反向传播："><span class="nav-number">1.3.</span> <span class="nav-text">3. BN层的反向传播：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#4-测试阶段：平均移动"><span class="nav-number">1.4.</span> <span class="nav-text">4. 测试阶段：平均移动</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#🌼-Layer-Normalization"><span class="nav-number">2.</span> <span class="nav-text">🌼  Layer Normalization</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#🌼-Tensorflow-源码"><span class="nav-number">3.</span> <span class="nav-text">🌼 Tensorflow 源码</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#1-tf-nn-moments-函数"><span class="nav-number">3.1.</span> <span class="nav-text">1. tf.nn.moments()函数</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-tf-contrib-layers-batch-norm-函数"><span class="nav-number">3.2.</span> <span class="nav-text">2. tf.contrib.layers.batch_norm() 函数</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3-tf-contrib-layers-layer-norm-函数"><span class="nav-number">3.3.</span> <span class="nav-text">3. tf.contrib.layers.layer_norm() 函数</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Alyssa"
+      src="/images/toux.jpg">
+  <p class="site-author-name" itemprop="name">Alyssa</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">27</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/alyssaasa" title="GitHub → https://github.com/alyssaasa" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://weibo.com/Alyssaasa" title="Weibo → https://weibo.com/Alyssaasa" rel="noopener" target="_blank"><i class="fa fa-fw fa-weibo"></i>Weibo</a>
+      </span>
+  </div>
+
+
+<script type="text/javascript">
+     var alltags = document.getElementsByClassName('tag-cloud-tags');
+     var tags = alltags[0].getElementsByTagName('a');
+     for (var i = tags.length - 1; i >= 0; i--) {
+       var r=Math.floor(Math.random()*75+130);
+       var g=Math.floor(Math.random()*75+100);
+       var b=Math.floor(Math.random()*75+80);
+       tags[i].style.background = "rgb("+r+","+g+","+b+")";
+     }
+</script>
+
+<style>
+  .tag-cloud-tags{
+    /*font-family: Helvetica, Tahoma, Arial;*/
+    /*font-weight: 100;*/
+    text-align: center;
+    counter-reset: tags;
+  }
+  .tag-cloud-tags a{
+    border-radius: 6px;
+    padding-right: 5px;
+    padding-left: 5px;
+    margin: 8px 5px 10px 3px;
+  }
+  .tag-cloud-tags a:before{
+    content: "🔖";
+  }
+
+  .tag-cloud-tags a:hover{
+     box-shadow: 0px 5px 15px 0px rgba(0,0,0,.4);
+     transform: scale(1.1);
+     /*box-shadow: 10px 10px 15px 2px rgba(0,0,0,.12), 0 0 6px 0 rgba(104, 104, 105, 0.1);*/
+     transition-duration: 0.15s;
+  }
+
+</style>
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2019 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Alyssa</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/pisces.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+  <script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+<script type="text/x-mathjax-config">
+
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ['\\(', '\\)'] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+      equationNumbers: {
+        autoNumber: 'AMS'
+      }
+    }
+  });
+
+  MathJax.Hub.Register.StartupHook('TeX Jax Ready', function() {
+    MathJax.InputJax.TeX.prefilterHooks.Add(function(data) {
+      if (data.display) {
+        var next = data.script.nextSibling;
+        while (next && next.nodeName.toLowerCase() === '#text') {
+          next = next.nextSibling;
+        }
+        if (next && next.nodeName.toLowerCase() === 'br') {
+          next.parentNode.removeChild(next);
+        }
+      }
+    });
+  });
+
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for (i = 0; i < all.length; i += 1) {
+      element = document.getElementById(all[i].inputID + '-Frame').parentNode;
+      if (element.nodeName.toLowerCase() == 'li') {
+        element = element.parentNode;
+      }
+      element.classList.add('has-jax');
+    }
+  });
+</script>
+<script>
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_HTMLorMML', () => {
+    MathJax.Hub.Typeset();
+  }, window.MathJax);
+</script>
+
+    
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID: 'a0b09f47cc93396b2dd6',
+      clientSecret: 'bdf8c7211c890d37071003e98dd9879483be6512',
+      repo: 'alyssaasa.github.io',
+      owner: 'alyssaasa',
+      admin: ['alyssaasa'],
+      id: 'ef38980d2792ece2f2041a3add858ef4',
+        language: 'zh-CN',
+      distractionFreeMode: 'true'
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+</script>
+
+</body>
+</html>
